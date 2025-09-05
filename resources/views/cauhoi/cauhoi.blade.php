@@ -18,7 +18,7 @@
 
             <div class="question-area">
                 <div id="question-container">
-                    <p>Đang tải câu hỏi...</p>
+                    <p>Đang tải câu hỏi aaaa...</p>
                 </div>
 
                 <div class="navigation-buttons">

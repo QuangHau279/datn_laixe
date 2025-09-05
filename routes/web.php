@@ -1,25 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 use App\Http\Controllers\CauHoiController;
 
-Route::get('/cauhoi', [CauHoiController::class, 'index']);
+// Trang giao diện
+Route::get('/cau-hoi', fn() => view('cauhoi'))->name('cauhoi.page');
+Route::get('/cauhoi',  fn() => view('cauhoi')); // alias
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// API JSON (JS chỉ load 1 câu/lần)
+Route::get('/api/grid',         [CauHoiController::class, 'grid']);
+Route::get('/api/cauhoi/{stt}', [CauHoiController::class, 'byStt'])->whereNumber('stt');
 
-Route::get('/cauhoi', function () {
-    return view('cauhoi'); // resources/views/cauhoi.blade.php
-});
+// Trang mặc định
+Route::get('/', fn () => view('welcome'));

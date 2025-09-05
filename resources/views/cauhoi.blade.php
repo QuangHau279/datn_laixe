@@ -17,18 +17,22 @@
             <div class="question-grid"></div>
 
             <div class="question-area">
-                
                 <div id="question-container">
-                    <p>Đang tải câu hỏi...</p>
+                    <p>Đang tải câu hỏi aaaa...</p>
                 </div>
 
                 <div class="navigation-buttons">
-                    <button id="prev-btn" class="nav-btn" disabled><< Câu trước</button>
-                    <button id="next-btn" class="nav-btn" disabled>Câu sau >></button>
+                    <button id="prev-btn" class="nav-btn" disabled>&lt;&lt; Câu trước</button>
+                    <button id="next-btn" class="nav-btn" disabled>Câu sau &gt;&gt;</button>
                 </div>
             </div>
         </div>
     </div>
+
+    {{-- Cấu hình endpoint JSON để JS fetch dữ liệu câu hỏi + ảnh --}}
+    <script>
+        window.QUESTION_API = "{{ url('/cauhoi/json') }}";
+    </script>
 
     {{-- Liên kết tới file Javascript đã được viết lại --}}
     <script src="{{ asset('js/quiz-logic.js') }}"></script>
