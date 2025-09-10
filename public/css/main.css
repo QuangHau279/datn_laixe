@@ -1,0 +1,97 @@
+:root{
+  --brand:#2aa7e1; --brand-2:#7fd3ff; --brand-dark:#0a4d6a;
+  --accent:#ffd400; --bg:#f5fbff; --card:#ffffff; --text:#0f172a; --muted:#5b6b7b;
+  --radius:18px; --shadow:0 10px 30px rgba(6,24,44,.08);
+}
+*{box-sizing:border-box} html,body{margin:0}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";color:var(--text);background:var(--bg)}
+a{color:inherit;text-decoration:none}
+.container{max-width:1200px;margin:auto;padding:0 20px}
+
+/* Header */
+.site-header{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 20px rgba(0,0,0,.04)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.3px}
+.brand .logo{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-2));display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.btn-menu{display:inline-flex;align-items:center;gap:10px;border:none;background:#fff;padding:10px 14px;border-radius:12px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.btn-menu:hover{background:#f0f7ff}
+.hamburger{width:20px;height:2px;background:var(--text);position:relative}
+.hamburger:before,.hamburger:after{content:"";position:absolute;left:0;right:0;height:2px;background:var(--text)}
+.hamburger:before{top:-6px}.hamburger:after{top:6px}
+
+/* Offcanvas right (menu đè bên phải) */
+.offcanvas{position:fixed;top:0;right:0;height:100dvh;width:320px;background:#fff;box-shadow:-10px 0 30px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .35s ease;z-index:60;display:flex;flex-direction:column}
+.offcanvas.open{transform:translateX(0)}
+.offcanvas header{box-shadow:none;position:sticky;top:0}
+.offcanvas .menu-title{font-weight:700;font-size:18px}
+.offcanvas nav a{display:block;padding:14px 20px;border-bottom:1px solid #eef3f8}
+.offcanvas nav a:hover{background:#f6fbff}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.25);opacity:0;visibility:hidden;transition:opacity .3s;z-index:55}
+.scrim.show{opacity:1;visibility:visible}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;padding:22px 0}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow)}
+.hero-left{padding:22px}
+.label{display:inline-flex;gap:8px;align-items:center;background:var(--brand);color:#fff;padding:8px 12px;border-radius:999px;font-weight:600;font-size:13px}
+.hero-title{margin:16px 0 10px;font-size:28px;line-height:1.25;color:var(--brand-dark)}
+.hero-text{color:var(--muted);font-size:15px;max-width:520px}
+.hero-right{position:relative;overflow:hidden;padding:14px}
+.img-wrap{position:relative;border-radius:14px;overflow:hidden;height:220px;background:linear-gradient(135deg,#cfefff,#e8f7ff)}
+.img-wrap img{width:100%;height:100%;object-fit:cover}
+.note-badge{position:absolute;top:10px;left:10px;background:rgba(255,212,0,.95);color:#111;font-size:12px;font-weight:700;padding:6px 8px;border-radius:999px}
+
+/* --- Placeholder ảnh chung --- */
+.img-holder{
+  position: relative; width: 100%;
+  border-radius: 14px; background:#eef7ff;
+  border: 1px dashed #b7e6ff;
+  display:flex; align-items:center; justify-content:center;
+  color:#3d5b6e; font-size:12px; text-align:center; padding:8px;
+  overflow:hidden; background-size:cover; background-position:center;
+}
+.img-holder .note-badge{
+  position:absolute; top:10px; left:10px;
+  background:rgba(255,212,0,.95); color:#111; font-size:12px;
+  font-weight:700; padding:6px 8px; border-radius:999px;
+}
+.ratio-16x9{ aspect-ratio: 16/9; }
+.ratio-1x1{  aspect-ratio: 1/1;  }
+
+/* Thumb cho item khóa học */
+.course .thumb{ width:52px; border-radius:12px; }
+
+
+/* Courses */
+.section-title{font-size:22px;text-align:center;margin:10px 0 12px}
+.courses{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.course{display:flex;gap:12px;align-items:center;padding:14px;border-radius:16px;background:#eefdff;border:1px solid #def5ff}
+.course .icon{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--brand-2),var(--brand));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+.course h4{margin:0;font-size:16px}
+.course p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+
+/* Stats strip */
+.stats{margin:18px 0;border-radius:16px;background:linear-gradient(90deg,#0b7fb0,#3fc1ff);color:#fff;display:grid;grid-template-columns:repeat(4,1fr)}
+.stat{padding:20px;text-align:center;border-right:1px solid rgba(255,255,255,.15)}
+.stat:last-child{border-right:none}
+.stat .num{font-size:28px;font-weight:900}
+.stat .desc{font-size:12px;opacity:.95}
+
+/* CTA + Lead */
+.cta{background:#e7f6ff;padding:16px;border:1px dashed #b7e6ff}
+.lead{margin:18px 0 24px}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{display:flex;flex-direction:column}
+.form label{font-size:13px;color:var(--muted);margin-bottom:6px}
+.form input,.form select{padding:12px;border:1px solid #dbe7f2;border-radius:12px}
+.form input:focus,.form select:focus{border-color:var(--brand)}
+.form .full{grid-column:1/-1}
+.btn{appearance:none;border:none;background:var(--accent);color:#111;padding:12px 16px;border-radius:999px;font-weight:800;cursor:pointer}
+
+/* Footer */
+.site-footer{background:#0c2f44;color:#cde9f8;padding:26px 0;margin-top:18px}
+.site-footer small{color:#9fd6ef}
+
+/* Responsive */
+@media (max-width:980px){ .hero{grid-template-columns:1fr} .courses{grid-template-columns:1fr 1fr} .form{grid-template-columns:1fr} }
+@media (max-width:540px){ .courses{grid-template-columns:1fr} .offcanvas{width:84vw} }
