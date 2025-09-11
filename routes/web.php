@@ -13,9 +13,6 @@ Route::get('/cau-hoi/{stt?}', function ($stt = null) {
     return view('cauhoi.cauhoi', ['initialStt' => $stt]); // đúng đường dẫn thư mục
 })->whereNumber('stt')->name('page.cauhoi');
 
-/** Giữ route cũ để khỏi gãy link cũ (301) */
-Route::redirect('/cauhoi', '/cau-hoi', 301);
-
 /**
  * ========== API JSON ==========
  * /api/cau-hoi/grid           : trả danh sách stt dùng cho lưới

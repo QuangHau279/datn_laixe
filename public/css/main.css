@@ -1,97 +1,160 @@
+/* ========== Tokens & Base (mobile-first) ========== */
 :root{
-  --brand:#2aa7e1; --brand-2:#7fd3ff; --brand-dark:#0a4d6a;
+  --brand:#2aa7e1; --brand-2:#35b2f6; --brand-dark:#0a4d6a;
   --accent:#ffd400; --bg:#f5fbff; --card:#ffffff; --text:#0f172a; --muted:#5b6b7b;
-  --radius:18px; --shadow:0 10px 30px rgba(6,24,44,.08);
+  --radius:14px; --shadow:0 10px 30px rgba(6,24,44,.08);
 }
-*{box-sizing:border-box} html,body{margin:0}
-body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";color:var(--text);background:var(--bg)}
-a{color:inherit;text-decoration:none}
-.container{max-width:1200px;margin:auto;padding:0 20px}
+*{box-sizing:border-box} html,body{margin:0} html{-webkit-text-size-adjust:100%}
+body{
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+  color:var(--text); background:var(--bg); font-size:15px; line-height:1.6;
+}
+a, a:visited, a:hover, a:active{color:inherit; text-decoration:none}
+.container{max-width:1080px; margin:auto; padding:0 16px}
 
-/* Header */
-.site-header{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 20px rgba(0,0,0,.04)}
-.nav{display:flex;align-items:center;justify-content:space-between;height:64px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.3px}
-.brand .logo{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-2));display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
-.btn-menu{display:inline-flex;align-items:center;gap:10px;border:none;background:#fff;padding:10px 14px;border-radius:12px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+/* ========== Header & Offcanvas ========== */
+.site-header{position:sticky; top:0; z-index:50; background:#fff; box-shadow:0 2px 20px rgba(0,0,0,.04)}
+.nav{display:flex; align-items:center; justify-content:space-between; height:56px}
+.brand{display:flex; align-items:center; gap:8px; font-weight:800; font-size:15px}
+.btn-menu{display:inline-flex; align-items:center; gap:10px; border:none; background:#fff; padding:8px 12px; border-radius:10px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,.06)}
 .btn-menu:hover{background:#f0f7ff}
-.hamburger{width:20px;height:2px;background:var(--text);position:relative}
-.hamburger:before,.hamburger:after{content:"";position:absolute;left:0;right:0;height:2px;background:var(--text)}
+.hamburger{width:18px; height:2px; background:var(--text); position:relative}
+.hamburger:before,.hamburger:after{content:""; position:absolute; left:0; right:0; height:2px; background:var(--text)}
 .hamburger:before{top:-6px}.hamburger:after{top:6px}
 
-/* Offcanvas right (menu đè bên phải) */
-.offcanvas{position:fixed;top:0;right:0;height:100dvh;width:320px;background:#fff;box-shadow:-10px 0 30px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .35s ease;z-index:60;display:flex;flex-direction:column}
+.offcanvas{
+  position:fixed; top:0; right:0; height:100dvh; width:90vw; background:#fff;
+  box-shadow:-10px 0 30px rgba(0,0,0,.08); transform:translateX(100%); transition:transform .35s ease;
+  z-index:60; display:flex; flex-direction:column
+}
 .offcanvas.open{transform:translateX(0)}
-.offcanvas header{box-shadow:none;position:sticky;top:0}
-.offcanvas .menu-title{font-weight:700;font-size:18px}
-.offcanvas nav a{display:block;padding:14px 20px;border-bottom:1px solid #eef3f8}
+.offcanvas header{position:sticky; top:0}
+.offcanvas .menu-title{font-weight:700; font-size:18px}
+.offcanvas nav a{display:block; padding:14px 20px; border-bottom:1px solid #eef3f8; font-size:15px}
 .offcanvas nav a:hover{background:#f6fbff}
-.scrim{position:fixed;inset:0;background:rgba(0,0,0,.25);opacity:0;visibility:hidden;transition:opacity .3s;z-index:55}
-.scrim.show{opacity:1;visibility:visible}
+.scrim{position:fixed; inset:0; background:rgba(0,0,0,.25); opacity:0; visibility:hidden; transition:opacity .3s; z-index:55}
+.scrim.show{opacity:1; visibility:visible}
 
-/* Hero */
-.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;padding:22px 0}
-.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow)}
-.hero-left{padding:22px}
-.label{display:inline-flex;gap:8px;align-items:center;background:var(--brand);color:#fff;padding:8px 12px;border-radius:999px;font-weight:600;font-size:13px}
-.hero-title{margin:16px 0 10px;font-size:28px;line-height:1.25;color:var(--brand-dark)}
-.hero-text{color:var(--muted);font-size:15px;max-width:520px}
-.hero-right{position:relative;overflow:hidden;padding:14px}
-.img-wrap{position:relative;border-radius:14px;overflow:hidden;height:220px;background:linear-gradient(135deg,#cfefff,#e8f7ff)}
-.img-wrap img{width:100%;height:100%;object-fit:cover}
-.note-badge{position:absolute;top:10px;left:10px;background:rgba(255,212,0,.95);color:#111;font-size:12px;font-weight:700;padding:6px 8px;border-radius:999px}
+/* ========== Hero ========== */
+.hero{display:grid; grid-template-columns:1fr; gap:16px; padding:18px 0}
+.card{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow)}
+.hero-left{padding:16px 18px}
+.label{display:inline-flex; gap:8px; align-items:center; background:var(--brand); color:#fff; padding:5px 10px; border-radius:999px; font-weight:600; font-size:12px}
+.hero-title{
+  margin:8px 0 6px; color:var(--brand-dark); font-weight:800; line-height:1.28;
+  font-size:clamp(20px, 1.9vw + 12px, 24px); letter-spacing:-0.2px;
+}
+.hero-text{color:var(--muted); font-size:13.5px; max-width:520px}
+.hero-right{padding:10px}
 
-/* --- Placeholder ảnh chung --- */
+/* Placeholder ảnh chung */
 .img-holder{
-  position: relative; width: 100%;
-  border-radius: 14px; background:#eef7ff;
-  border: 1px dashed #b7e6ff;
-  display:flex; align-items:center; justify-content:center;
-  color:#3d5b6e; font-size:12px; text-align:center; padding:8px;
+  position:relative; width:100%; border-radius:14px; background:#eef7ff; border:1px dashed #b7e6ff;
+  display:flex; align-items:center; justify-content:center; color:#3d5b6e; font-size:12px; text-align:center; padding:8px;
   overflow:hidden; background-size:cover; background-position:center;
 }
-.img-holder .note-badge{
-  position:absolute; top:10px; left:10px;
-  background:rgba(255,212,0,.95); color:#111; font-size:12px;
-  font-weight:700; padding:6px 8px; border-radius:999px;
+.ratio-16x9{aspect-ratio:16/9} .ratio-1x1{aspect-ratio:1/1}
+.note-badge{position:absolute; top:10px; left:10px; background:rgba(255,212,0,.95); color:#111; font-size:12px; font-weight:700; padding:6px 8px; border-radius:999px}
+
+/* ========== Courses (cards lớn hơn) ========== */
+.section-title{text-align:center; font-size:20px; margin:10px 0}
+.courses{display:grid; grid-template-columns:1fr; gap:16px; margin:8px 0 30px}
+.courses .course{
+  display:flex; gap:10px; align-items:center; padding:16px 18px; min-height:82px;
+  border-radius:16px; background:#eefdff; border:1px solid #e4f4ff; transition:.15s ease
 }
-.ratio-16x9{ aspect-ratio: 16/9; }
-.ratio-1x1{  aspect-ratio: 1/1;  }
+.courses .course:active{transform:scale(.985)}
+.course .thumb{width:56px; border-radius:12px}
+.course h4{margin:0; font-size:16px; font-weight:700}
+.course p{margin:2px 0 0; font-size:13px; color:var(--muted)}
 
-/* Thumb cho item khóa học */
-.course .thumb{ width:52px; border-radius:12px; }
+/* ========== Stats ========== */
+.stats{
+  margin:16px 0; border-radius:14px; background:linear-gradient(90deg,#0b7fb0,#3fc1ff); color:#fff;
+  display:grid; grid-template-columns:1fr;
+}
+.stat{padding:16px; text-align:center; border-bottom:1px solid rgba(255,255,255,.15)}
+.stat:last-child{border-bottom:none}
+.stat .num{font-size:24px; font-weight:900}
+.stat .desc{font-size:11.5px; opacity:.95}
 
-
-/* Courses */
-.section-title{font-size:22px;text-align:center;margin:10px 0 12px}
-.courses{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.course{display:flex;gap:12px;align-items:center;padding:14px;border-radius:16px;background:#eefdff;border:1px solid #def5ff}
-.course .icon{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--brand-2),var(--brand));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
-.course h4{margin:0;font-size:16px}
-.course p{margin:2px 0 0;font-size:13px;color:var(--muted)}
-
-/* Stats strip */
-.stats{margin:18px 0;border-radius:16px;background:linear-gradient(90deg,#0b7fb0,#3fc1ff);color:#fff;display:grid;grid-template-columns:repeat(4,1fr)}
-.stat{padding:20px;text-align:center;border-right:1px solid rgba(255,255,255,.15)}
-.stat:last-child{border-right:none}
-.stat .num{font-size:28px;font-weight:900}
-.stat .desc{font-size:12px;opacity:.95}
-
-/* CTA + Lead */
-.cta{background:#e7f6ff;padding:16px;border:1px dashed #b7e6ff}
-.lead{margin:18px 0 24px}
-.form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.field{display:flex;flex-direction:column}
-.form label{font-size:13px;color:var(--muted);margin-bottom:6px}
-.form input,.form select{padding:12px;border:1px solid #dbe7f2;border-radius:12px}
+/* ========== CTA + Form ========== */
+.cta{background:#e7f6ff; padding:14px; border:1px dashed #b7e6ff}
+.lead{margin:16px 0 20px}
+.form{display:grid; grid-template-columns:1fr; gap:10px}
+.field{display:flex; flex-direction:column}
+.form label{font-size:12.5px; color:var(--muted); margin-bottom:6px}
+.form input,.form select{padding:10px 12px; border:1px solid #dbe7f2; border-radius:10px; outline:none}
 .form input:focus,.form select:focus{border-color:var(--brand)}
 .form .full{grid-column:1/-1}
-.btn{appearance:none;border:none;background:var(--accent);color:#111;padding:12px 16px;border-radius:999px;font-weight:800;cursor:pointer}
+.btn{appearance:none; border:none; background:var(--accent); color:#111; padding:10px 14px; border-radius:999px; font-weight:800; cursor:pointer}
 
-/* Footer */
-.site-footer{background:#0c2f44;color:#cde9f8;padding:26px 0;margin-top:18px}
+/* ========== Footer (có ảnh lót chỉnh opacity) ========== */
+.site-footer{position:relative; overflow:hidden; background:#0c2f44; color:#cde9f8; padding:22px 0; margin-top:18px}
 .site-footer small{color:#9fd6ef}
+.site-footer::before{
+  content:""; position:absolute; inset:0;
+  background-image:var(--footer-bg, none); background-size:cover; background-position:center;
+  opacity:var(--footer-bg-opacity, .15); pointer-events:none; z-index:0;
+  filter:saturate(.9) contrast(1.05);
+}
+.site-footer>.container{position:relative; z-index:1}
 
-/* Responsive */
-@media (max-width:980px){ .hero{grid-template-columns:1fr} .courses{grid-template-columns:1fr 1fr} .form{grid-template-columns:1fr} }
-@media (max-width:540px){ .courses{grid-template-columns:1fr} .offcanvas{width:84vw} }
+/* ========== Breakpoints ========== */
+/* >=560px: stats 2 cột, form 2 cột */
+@media (min-width:560px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .stat{border-bottom:none; border-right:1px solid rgba(255,255,255,.15)}
+  .stat:nth-child(2n){border-right:none}
+  .form{grid-template-columns:1fr 1fr}
+  .offcanvas{width:300px}
+}
+/* >=768px: courses 2 cột */
+@media (min-width:768px){
+  .courses{grid-template-columns:1fr 1fr}
+}
+/* >=1024px: hero 2 cột (ảnh to hơn), courses 3 cột, stats 4 cột */
+@media (min-width:1024px){
+  .hero{grid-template-columns:.9fr 1.1fr}
+  .hero-right .img-holder{min-height:260px}
+  .courses{grid-template-columns:repeat(3,1fr)}
+  .stats{grid-template-columns:repeat(4,1fr)}
+  .stat{border-right:1px solid rgba(255,255,255,.15)}
+  .stat:last-child{border-right:none}
+}
+
+/* Tap target cho mobile */
+button,.btn,.courses .course{min-height:44px}
+
+/* ==== Lead form card (center, gọn) ==== */
+.lead{ padding: 8px 0 24px; }
+.lead-card{
+  max-width: 760px; margin: 0 auto;
+  background:#fff; border:1px solid #e6f1f8; border-radius:16px;
+  box-shadow: var(--shadow); padding:16px;
+}
+.lead-card h3{ text-align:center; margin:0 0 12px; }
+
+.lead-form{
+  max-width: 640px; margin: 0 auto;
+  display:grid; grid-template-columns: 1fr 1fr; gap:10px;
+}
+.lead-form .full{ grid-column: 1 / -1; }
+
+.lead-form label{ font-size:12.5px; color:var(--muted); margin-bottom:6px; }
+.lead-form input, .lead-form select{
+  padding:8px 10px;                    /* nhỏ gọn hơn */
+  font-size:14px; border:1px solid #dbe7f2; border-radius:10px; outline:none;
+}
+.lead-form input:focus, .lead-form select:focus{ border-color: var(--brand); }
+
+.lead-form .btn{
+  width:100%; padding:10px 12px;       /* nút đầy chiều ngang card */
+  border-radius:999px; font-weight:800;
+}
+
+/* Mobile */
+@media (max-width: 560px){
+  .lead-card{ padding:14px; }
+  .lead-form{ grid-template-columns: 1fr; max-width: 360px; }
+}

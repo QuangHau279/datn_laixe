@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="theme-color" content="#2aa7e1">
   <title>@yield('title','LyThuyetLaiXe.vn')</title>
   <link rel="stylesheet" href="{{ asset('css/main.css') }}">
   @stack('styles')
@@ -12,7 +13,11 @@
   <header class="site-header">
     <div class="container nav">
       <div class="brand">
-        <span class="logo">🚗</span>
+        <div class="logo img-holder ratio-1x1"
+             style="width:40px;border-radius:50%;
+                    background-image:url('{{ asset('images/icons/Logo.png') }}')">
+          <span class="sr-only"></span>
+        </div>
         <a href="{{ route('home') }}">LYTHUYETLAIXE.VN</a>
       </div>
       <button class="btn-menu" id="btnMenu" aria-controls="menuRight" aria-expanded="false">
@@ -39,12 +44,14 @@
     @yield('content')
   </main>
 
-  <footer class="site-footer">
-    <div class="container">
-      <strong>LYTHUYETLAIXE.VN</strong><br>
-      <small>Hotline: 0981.6688.75</small>
-    </div>
-  </footer>
+<footer class="site-footer"
+        style="--footer-bg: url('{{ asset('images/footer-bg.png') }}');
+               --footer-bg-opacity: .18;">
+  <div class="container">
+    <strong>LYTHUYETLAIXE.VN</strong><br>
+    <small>Hotline: 0981.6688.75</small>
+  </div>
+</footer>
 
   <script src="{{ asset('js/main.js') }}"></script>
   @stack('scripts')
