@@ -24,3 +24,35 @@ class BoCauHoi extends Model
         return $this->hasMany(HinhAnh::class, 'CauHoiId', 'id');
     }
 }
+
+
+class CauHoi extends Model
+{
+    protected $table = 'tblcauhoi'; // nếu bạn đặt tên khác, sửa lại
+    protected $fillable = ['stt', 'noi_dung', 'ten', 'active', 'is_liet', 'liet', 'isLiet', 'CauLiet'];
+    public $timestamps = false;
+
+    public function dapAn()
+    {
+        return $this->hasMany(CauTraLoi::class, 'CauHoiId', 'id')->orderBy('stt');
+    }
+
+    public function hinhAnh()
+    {
+        return $this->hasMany(HinhAnh::class, 'CauHoiId', 'id')->orderBy('stt');
+    }
+
+    // Chuẩn hóa thuộc tính "is_liet" dù cột thật có thể khác tên
+    public function getIsLietNormalizedAttribute()
+    {
+        $attrs = $this->attributes ?? [];
+        $v = $attrs['is_liet'] ?? $attrs['liet'] ?? $attrs['isLiet'] ?? $attrs['CauLiet'] ?? 0;
+        return (bool)$v;
+    }
+
+    // Chuẩn hóa text câu hỏi
+    public function getTextNormalizedAttribute()
+    {
+        return $this->noi_dung ?? $this->ten ?? null;
+    }
+}

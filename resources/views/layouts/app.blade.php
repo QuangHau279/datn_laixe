@@ -32,9 +32,9 @@
       <span class="menu-title">Menu</span>
       <button class="btn-menu" id="btnCloseMenu" aria-label="Đóng menu">✕</button>
     </header>
-    <nav>
+      <nav>
       <a href="{{ route('help') }}">Trợ giúp</a>
-      <a href="{{ route('practice') }}">Ôn tập</a>
+      <a href="{{ route('practice.cauhoi') }}">Ôn tập</a>  
       <a href="{{ route('simulation') }}">Mô phỏng</a>
     </nav>
   </aside>

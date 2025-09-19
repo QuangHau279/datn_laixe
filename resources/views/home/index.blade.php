@@ -23,7 +23,7 @@
   {{-- CÁC KHÓA HỌC --}}
   <h2 class="section-title">Các Khóa Học</h2>
   <section class="courses" aria-label="Danh sách khóa học">
-    <a class="course" href="{{ route('practice') }}">
+    <a class="course" href="{{ route('practice.cauhoi') }}">
       <div class="thumb img-holder ratio-1x1"
            style="background-image:url('{{ asset('images/courses/ly-thuyet.jpg') }}')">
         <span>IMG</span>
@@ -55,7 +55,7 @@
       <div><h4>Xe Máy</h4><p>250 câu</p></div>
     </a>
 
-    <a class="course" href="{{ route('practice') }}">
+    <a class="course" href="#"> 
       <div class="thumb img-holder ratio-1x1"
            style="background-image:url('{{ asset('images/courses/thi-thu.jpg') }}')">
         <span>IMG</span>
@@ -74,31 +74,11 @@
 
 {{-- THỐNG KÊ --}}
 <section class="stats" id="stats">
-  <div class="stat">
-    <div class="num js-stat" data-target="5" data-pad="2">05</div>
-    <div class="desc">Năm phát triển</div>
-  </div>
-  <div class="stat">
-    <div class="num js-stat" data-target="1000" data-suffix="+">1000+</div>
-    <div class="desc">Học viên</div>
-  </div>
-  <div class="stat">
-    <div class="num js-stat" data-target="99" data-suffix="+">99+</div>
-    <div class="desc">Phản hồi tốt</div>
-  </div>
-  <div class="stat">
-    <div class="num js-stat" data-target="100" data-suffix="%">100%</div>
-    <div class="desc">Chất lượng</div>
-  </div>
+  <div class="stat"><div class="num js-stat" data-target="5" data-pad="2">05</div><div class="desc">Năm phát triển</div></div>
+  <div class="stat"><div class="num js-stat" data-target="1000" data-suffix="+">1000+</div><div class="desc">Học viên</div></div>
+  <div class="stat"><div class="num js-stat" data-target="99" data-suffix="+">99+</div><div class="desc">Phản hồi tốt</div></div>
+  <div class="stat"><div class="num js-stat" data-target="100" data-suffix="%">100%</div><div class="desc">Chất lượng</div></div>
 </section>
-
-  {{-- CTA --}}
-  <section class="card cta">
-    <h3>HỌC LÁI XE THÀNH CÔNG</h3>
-    <p>Nhận Hồ Sơ & Bổ Túc Tay Lái</p>
-    <p>Nhận hồ sơ lái xe uy tín, thân thiện, chi phí rõ ràng. Cam kết học đến khi đậu lấy bằng.</p>
-    <p><strong style="color:var(--brand-dark)">Liên hệ: 0981.6868.75 (Thầy Phúc)</strong></p>
-  </section>
 
   {{-- FORM ĐĂNG KÝ (demo) --}}
   {{-- FORM ĐĂNG KÝ --}}
