@@ -43,11 +43,10 @@ class ThiController extends Controller
         $thoiGian = (int)$preset['thoi_gian'];
         $minLiet = (int)($preset['min_cau_liet'] ?? 0);
 
-        // Tìm BangLaiId theo 'ma' / 'ten' / 'code'
+        // Tìm BangLaiId theo 'ma' / 'ten'  (xóa 'code' vì không tồn tại)
         $bang = LoaiBangLai::query()
             ->where('ma', $hang)
             ->orWhere('ten', $hang)
-            ->orWhere('code', $hang)
             ->first();
 
         // Lấy danh sách câu theo hạng (nếu có mapping), nếu không fallback toàn bộ
@@ -96,7 +95,7 @@ class ThiController extends Controller
 
         foreach ($chon as $q) {
             $answers = $q->dapAn()->orderBy('stt')->get()->map(function ($a) {
-                $text = $a->noi_dung ?? $a->ten ?? null;
+                $text = $a->noidung ?? $a->ten ?? null;  // sửa 'noi_dung' → 'noidung'
                 return [
                     'id' => $a->id,
                     'stt' => $a->stt,
@@ -110,7 +109,7 @@ class ThiController extends Controller
 
             $correctIds = $q->dapAn()
                 ->where(function ($qq) {
-                    $qq->where('is_correct', 1)->orWhere('Dung', 1)->orWhere('isTrue', 1);
+                    $qq->where('is_correct', 1)->orWhere('caudung', 1)->orWhere('isTrue', 1);  // sửa 'Dung' → 'caudung' lowercase
                 })->pluck('id')->toArray();
 
             // nếu DB chỉ có 1 đáp án đúng (phổ biến), vẫn ok
@@ -131,7 +130,7 @@ class ThiController extends Controller
                 'text'    => $q->text_normalized,
                 'is_liet' => $q->is_liet_normalized, // client chỉ dùng để cảnh báo, không chấm
                 'images'  => $images,
-                'answers' => $answers,
+                'answers' => $answers,  // sửa từ $answers (shuffled) → $answers (đã shuffle)
             ];
         }
 

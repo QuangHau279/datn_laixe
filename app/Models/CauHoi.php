@@ -4,8 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+
 class BoCauHoi extends Model
 {
+    use HasFactory;
     protected $table = 'tblbocauhoi';
     public $timestamps = false;       // dump không có cột timestamps
     protected $fillable = ['stt','noidung','cauliet','giaithichdapan','active'];
@@ -28,7 +34,8 @@ class BoCauHoi extends Model
 
 class CauHoi extends Model
 {
-    protected $table = 'tblcauhoi'; // nếu bạn đặt tên khác, sửa lại
+
+    protected $table = 'tblbocauhoi'; // nếu bạn đặt tên khác, sửa lại
     protected $fillable = ['stt', 'noi_dung', 'ten', 'active', 'is_liet', 'liet', 'isLiet', 'CauLiet'];
     public $timestamps = false;
 
@@ -56,3 +63,4 @@ class CauHoi extends Model
         return $this->noi_dung ?? $this->ten ?? null;
     }
 }
+

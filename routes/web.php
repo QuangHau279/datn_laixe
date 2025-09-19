@@ -52,7 +52,10 @@ Route::prefix('api')->name('api.')->group(function () {
    /thi-thu/ket-qua/{id} : trang xem kết quả đề đã thi (id)
 */
 
-
 Route::get('/thi-thu', function () {
     return view('thi.thi');
 })->name('page.thi');
+
+Route::get('/thi-thu/de/{id}', function ($id) {
+    return view('thi.lamde', ['deId' => $id]);
+})->whereNumber('id')->name('page.lamde');
