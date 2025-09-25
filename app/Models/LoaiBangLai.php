@@ -6,7 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class LoaiBangLai extends Model
 {
-    protected $table = 'tblloaiBanglai';
+    protected $table = 'tblloaibanglai';
     public $timestamps = false;
-    protected $fillable = ['ma', 'ten', 'active'];
+
+    // cột có sẵn trong DB: id, ten, socauhoi, mincauhoidung, active
+    protected $fillable = ['ten','socauhoi','mincauhoidung','active'];
+
+    public function cauHoiBangLai()
+    {
+        return $this->hasMany(CauHoiBangLai::class, 'BangLaiId', 'id');
+    }
 }

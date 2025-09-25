@@ -13,6 +13,7 @@ Route::get('/grid', [CauHoiController::class, 'grid']);
 Route::get('/cauhoi/{stt}', [CauHoiController::class, 'byStt']);
 
 
-Route::get('/thi/preset', [ThiController::class, 'presets']);
+Route::get('/thi/presets', [ThiController::class, 'presets']);
 Route::post('/thi/tao-de', [ThiController::class, 'create']);
 Route::post('/thi/nop-bai', [ThiController::class, 'submit']);
+

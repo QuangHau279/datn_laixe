@@ -8,5 +8,7 @@ class CauHoiBangLai extends Model
 {
     protected $table = 'tblcauhoibanglai';
     public $timestamps = false;
-    protected $fillable = ['CauHoiId', 'BangLaiId'];
+
+    // id, CauHoiId, BangLaiId
+    protected $fillable = ['CauHoiId','BangLaiId'];
 }
