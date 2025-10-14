@@ -30,5 +30,9 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+    'youtube' => [
+    'channel_id' => env('YT_CHANNEL_ID'),
+    ],
+
 
 ];

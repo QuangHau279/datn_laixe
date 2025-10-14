@@ -1,0 +1,163 @@
+/* ========== VARIABLES ========== */
+:root{
+  --blue:#2a7bd7; --blue-dark:#1f66b4;
+  --bg:#f6f7fb; --card:#fff; --border:#e4e6ef; --muted:#6b7280;
+  --ok:#18984a; --danger:#d93025; --text:#111; --white:#fff;
+  --r-sm:6px; --r-md:8px; --r-lg:10px; --r-round:9999px;
+  --b:1px solid var(--border);
+}
+
+/* ========== BASE ========== */
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:var(--bg); color:var(--text);
+}
+
+.muted{color:var(--muted)}
+.card{background:var(--card); border:var(--b); border-radius:var(--r-lg)}
+.btn{
+  height:34px; padding:0 12px; border-radius:var(--r-sm);
+  border:1px solid var(--blue); background:var(--blue); color:var(--white);
+  cursor:pointer; font-weight:600;
+}
+.btn:hover{background:var(--blue-dark); border-color:var(--blue-dark)}
+.btn-start{min-width:88px}
+.btn-end{margin-top:8px; background:#111; border-color:#111}
+.btn-nav{background:#e9f2ff;border-color:#a8ccff;color:#0b3d91}
+.btn-nav:hover{background:#d9e9ff}
+
+/* ========== PAGE STRUCTURE ========== */
+.page-title{
+  max-width:1100px; margin:14px auto; padding:10px 16px; text-align:center;
+  font-weight:700; background:#f5fb92; border:1px solid #dbe277; border-radius:6px;
+}
+.timebar{
+  max-width:1100px; margin:0 auto 12px; padding:8px 12px;
+  display:flex; gap:8px; align-items:center;
+  background:var(--blue); color:var(--white); border-radius:4px;
+}
+.layout{
+  max-width:1100px; margin:0 auto 20px; padding:0 10px;
+  display:grid; grid-template-columns:280px 1fr; gap:14px;
+}
+.left{
+  padding:12px; display:flex; flex-direction:column; gap:10px;
+}
+.right{padding:14px}
+.note{margin-top:6px; color:var(--muted); font-size:13px}
+
+/* LEFT – grid câu hỏi */
+.pad{
+  display:flex; flex-direction:column; gap:8px; padding:10px;
+  border:1px dashed var(--border); border-radius:var(--r-md);
+  background:#fafbff; max-height:70vh; overflow:auto;
+}
+.g-item{
+  display:flex; align-items:center; gap:10px; padding:6px 8px;
+  border:1px solid #e1e5f1; border-radius:var(--r-md); background:var(--card);
+}
+.g-item.active{outline:2px solid rgba(42,123,215,.25)}
+.g-item.liet{border-color:#ff6a6a}
+.g-no{
+  min-width:32px; height:32px; display:flex; align-items:center; justify-content:center;
+  border-radius:var(--r-sm); border:1px solid #cfd6e6; background:var(--card);
+  cursor:pointer; font-weight:700;
+}
+.g-no:hover{box-shadow:0 0 0 3px rgba(42,123,215,.15)}
+.g-no.answered{background:#e7f3ff; border-color:#8ec1ff}
+.g-opts{display:flex; gap:6px; margin-left:auto}
+.g-opt{
+  width:22px; height:22px; border-radius:4px; font-size:12px; font-weight:700; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  color:#0b3d91; border:1px solid #a8ccff; background:#e9f2ff;
+}
+.g-opt.selected{background:var(--blue); border-color:var(--blue); color:var(--white)}
+
+/* Màu sau khi nộp */
+.g-item.wrong .g-no{border-color:#f87171; color:#b91c1c}
+.g-item.ok .g-no{border-color:#34d399; color:#065f46}
+.g-item.unanswered .g-no{border-color:#cbd5e1; color:#64748b}
+.g-item.liet-wrong .g-no{background:#fee2e2}
+
+/* ========== EXAM AREA ========== */
+.exam-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px}
+.qindex{font-weight:700}
+
+/* Ảnh câu hỏi */
+.qimage{display:flex; justify-content:center; margin:8px 0 16px}
+.qimage.has-one,
+.qimage.has-many{max-width:860px; width:100%}
+.qimage.has-one img{
+  display:block; margin:0 auto; width:auto; height:auto;
+  max-width:100%; max-height:56vh; /* desktop */
+  object-fit:contain; border-radius:12px; border:1px solid #eef2f7;
+  background:#fff; box-shadow:0 6px 22px rgba(0,0,0,.08);
+  image-rendering:-webkit-optimize-contrast;
+}
+.qimage.has-many{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px;
+}
+.qimage.has-many img{
+  width:100%; height:180px; object-fit:contain;
+  border-radius:10px; border:1px solid #eef2f7; background:#fff; box-shadow:0 3px 12px rgba(0,0,0,.06)
+}
+
+/* Nội dung & đáp án */
+.qbody{display:flex; flex-direction:column; gap:12px}
+.qtext{font-weight:600}
+.answers{display:flex; flex-direction:column; gap:10px}
+.ans{
+  display:flex; align-items:center; gap:10px; padding:10px 12px; cursor:pointer;
+  border:var(--b); border-radius:var(--r-md); background:var(--card);
+}
+.ans:hover{box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.ans.selected{outline:2px solid var(--blue)}
+.ans-badge{
+  min-width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;
+  border-radius:var(--r-round); border:1px solid #cfd6e6; background:#f7fafc; font-weight:700;
+}
+.ans.review-selected{outline:2px dashed #999}
+.ans.review-disabled{cursor:default; opacity:.85}
+.exam-foot{display:flex; gap:8px; margin-top:12px}
+
+/* ========== RESULT & REVIEW TABLE ========== */
+.result{font-size:20px; margin-bottom:10px; font-weight:800}
+.result.pass{color:var(--ok)}
+.result.fail{color:var(--danger)}
+
+.tablewrap{overflow-x:auto}
+.rev-table{width:100%; border-collapse:collapse}
+.rev-table th,.rev-table td{
+  padding:8px 10px; border-bottom:1px solid #eee; text-align:center; white-space:nowrap
+}
+.rev-table thead th{background:#f8fafc; font-weight:600}
+.rev-table th:first-child,.rev-table td:first-child{text-align:left}
+.rev-row-right{background:#f0fff5}
+.rev-row-wrong{background:#fff5f5}
+.rev-row-none{background:#f6f7f9}
+.rev-liet{color:var(--danger); font-weight:700}
+
+/* ========== MOBILE ========== */
+@media (max-width:1024px){ .qimage.has-one img{max-height:38vh} }
+@media (max-width:768px){
+  .layout{grid-template-columns:1fr; padding:0; gap:8px}
+  .left{display:none} /* ẩn cột trái trên mobile */
+  .qtext{font-size:16px; line-height:1.45}
+  .ans{padding:12px; font-size:15px}
+  .exam-foot{
+    position:sticky; bottom:0; z-index:5; background:var(--card);
+    padding:8px; margin-top:8px; border-top:var(--b);
+  }
+  .qimage.has-one img{max-height:62vh}
+}
+
+/* ========== MOBILE CONTROLS (hiện trên mobile) ========== */
+.mobile-controls{
+  display:none; gap:8px; align-items:center; padding:10px; margin:10px auto;
+  max-width:1100px; background:#fff; border:var(--b); border-radius:8px;
+}
+.mobile-controls label{margin-right:6px; color:#374151}
+.mobile-controls select{height:34px; padding:0 8px; border:1px solid #cfd6e6; border-radius:6px}
+@media (max-width:768px){ .mobile-controls{display:flex} }

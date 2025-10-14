@@ -10,7 +10,7 @@
   <div class="quiz-banner img-holder ratio-16x9"
        style="background-image:url('{{ asset('images/hinhanh/banner1.png') }}')"></div>
 
-  <h1 class="quiz-heading">Học lý thuyết 600 câu lái xe ô tô Online | Luật mới</h1>
+  <h1 class="quiz-heading">Xe máy | Luật mới</h1>
 
   <div class="quiz-layout quiz-wrapper">
     {{-- SIDEBAR --}}

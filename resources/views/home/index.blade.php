@@ -21,56 +21,61 @@
   </section>
 
   {{-- CÁC KHÓA HỌC --}}
-  <h2 class="section-title">Các Khóa Học</h2>
-  <section class="courses" aria-label="Danh sách khóa học">
-    <a class="course" href="{{ route('practice.cauhoi') }}">
-      <div class="thumb img-holder ratio-1x1"
-           style="background-image:url('{{ asset('images/courses/ly-thuyet.jpg') }}')">
-        <span>IMG</span>
-      </div>
-      <div><h4>Ôn Thi Lý Thuyết</h4><p>600 câu</p></div>
-    </a>
+<h2 class="section-title">Các Khóa Học</h2>
+<section class="courses" aria-label="Danh sách khóa học">
+  {{-- Ôn thi Lý thuyết --}}
+  <a class="course" href="{{ route('practice.cauhoi') }}">
+    <div class="thumb img-holder ratio-1x1"
+         style="background-image:url('{{ asset('images/icons/icons8-car-100.png') }}')">
+    </div>
+    <div><h4>Ôn Thi Lý Thuyết</h4><p>600 câu</p></div>
+  </a>
 
-    <a class="course" href="{{ route('simulation') }}">
-      <div class="thumb img-holder ratio-1x1"
-           style="background-image:url('{{ asset('images/courses/mo-phong.jpg') }}')">
-        <span>IMG</span>
-      </div>
-      <div><h4>Ôn Thi Mô Phỏng</h4><p>120 câu</p></div>
-    </a>
+  {{-- Ôn thi Mô phỏng --}}
+  <a class="course" href="{{ route('simulation') }}">
+    <div class="thumb img-holder ratio-1x1"
+         style="background-image:url('{{ asset('images/icons/path.png') }}')">
+    </div>
+    <div><h4>Ôn Thi Mô Phỏng</h4><p>120 câu</p></div>
+  </a>
 
-    <a class="course" href="#">
-      <div class="thumb img-holder ratio-1x1"
-           style="background-image:url('{{ asset('images/courses/thuc-hanh.jpg') }}')">
-        <span>IMG</span>
-      </div>
-      <div><h4>Thực Hành Lái Xe</h4><p>Hỗ trợ học lái xe</p></div>
-    </a>
+  {{-- Thực hành lái xe → tạm dẫn về trang trợ giúp/hướng dẫn --}}
+  <a class="course" href="{{ route('videothuchanh') }}">
+    <div class="thumb img-holder ratio-1x1"
+         style="background-image:url('{{ asset('images/icons/dashboard.png') }}')">
+      
+    </div>
+    <div><h4>Thực Hành Lái Xe</h4><p>Hỗ trợ học lái xe</p></div>
+  </a>
 
-    <a class="course" href="#">
-      <div class="thumb img-holder ratio-1x1"
-           style="background-image:url('{{ asset('images/courses/xe-may.jpg') }}')">
-        <span>IMG</span>
-      </div>
-      <div><h4>Xe Máy</h4><p>250 câu</p></div>
-    </a>
+  {{-- Xe máy → cũng dẫn đến phần ôn tập (nếu bạn muốn tách riêng sau thì đổi route) --}}
+  <a class="course" href="{{ route('xemay') }}"> 
+    <div class="thumb img-holder ratio-1x1"
+         style="background-image:url('{{ asset('images/icons/icons8-motorbike-100-2.png') }}')">
+     
+    </div>
+    <div><h4>Xe Máy</h4><p>250 câu</p></div>
+  </a>
 
-    <a class="course" href="#"> 
-      <div class="thumb img-holder ratio-1x1"
-           style="background-image:url('{{ asset('images/courses/thi-thu.jpg') }}')">
-        <span>IMG</span>
-      </div>
-      <div><h4>Thi Thử Trực Tuyến</h4><p>20 bộ đề</p></div>
-    </a>
+  {{-- Thi thử trực tuyến --}}
+  <a class="course" href="{{ route('thi.thu') }}">
+    <div class="thumb img-holder ratio-1x1"
+         style="background-image:url('{{ asset('images/icons/license.png') }}')">
+      
+    </div>
+    <div><h4>Thi Thử Trực Tuyến</h4><p>20 bộ đề</p></div>
+  </a>
 
-    <a class="course" href="#">
-      <div class="thumb img-holder ratio-1x1"
-           style="background-image:url('{{ asset('images/courses/bien-bao.jpg') }}')">
-        <span>IMG</span>
-      </div>
-      <div><h4>Các biển báo</h4><p>Có minh họa</p></div>
-    </a>
-  </section>
+  {{-- Các biển báo --}}
+  <a class="course" href="{{ route('bienbao') }}">
+    <div class="thumb img-holder ratio-1x1"
+         style="background-image:url('{{ asset('images/icons/police.png') }}')">
+      
+    </div>
+    <div><h4>Các biển báo</h4><p>Có minh họa</p></div>
+  </a>
+</section>
+
 
 {{-- THỐNG KÊ --}}
 <section class="stats" id="stats">
@@ -102,7 +107,7 @@
         <label for="license">Hạng</label>
         <select id="license" name="license" required>
           <option value="" disabled selected>Chọn</option>
-          <option>A1</option><option>B1</option><option>B2</option><option>C</option>
+          <option>A1</option><option>B1</option><option>B</option><option>C1</option>
         </select>
       </div>
 

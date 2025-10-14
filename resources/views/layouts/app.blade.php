@@ -16,7 +16,6 @@
         <div class="logo img-holder ratio-1x1"
              style="width:40px;border-radius:50%;
                     background-image:url('{{ asset('images/icons/Logo.png') }}')">
-          <span class="sr-only"></span>
         </div>
         <a href="{{ route('home') }}">LYTHUYETLAIXE.VN</a>
       </div>
@@ -32,10 +31,14 @@
       <span class="menu-title">Menu</span>
       <button class="btn-menu" id="btnCloseMenu" aria-label="Đóng menu">✕</button>
     </header>
-      <nav>
-      <a href="{{ route('help') }}">Trợ giúp</a>
-      <a href="{{ route('practice.cauhoi') }}">Ôn tập</a>  
+    <nav>
+      <a href="{{ route('home') }}">Trang chủ</a>
+      <a href="{{ route('practice.cauhoi') }}">Ôn thi lý thuyết</a>
       <a href="{{ route('simulation') }}">Mô phỏng</a>
+      <a href="{{ route('videothuchanh') }}">Thực hành lái xe</a>
+      <a href="{{ route('xemay') }}">Ôn tập xe máy</a>
+      <a href="{{ route('thi.thu') }}">Thi thử</a>
+      <a href="{{ route('bienbao') }}">Biển báo</a>
     </nav>
   </aside>
   <div id="scrim" class="scrim" aria-hidden="true"></div>
@@ -44,14 +47,14 @@
     @yield('content')
   </main>
 
-<footer class="site-footer"
-        style="--footer-bg: url('{{ asset('images/footer-bg.png') }}');
-               --footer-bg-opacity: .18;">
-  <div class="container">
-    <strong>LYTHUYETLAIXE.VN</strong><br>
-    <small>Hotline: 0981.6688.75</small>
-  </div>
-</footer>
+  <footer class="site-footer"
+          style="--footer-bg: url('{{ asset('images/footer-bg.png') }}');
+                 --footer-bg-opacity: .18;">
+    <div class="container">
+      <strong>LYTHUYETLAIXE.VN</strong><br>
+      <small>Hotline: 0981.6688.75</small>
+    </div>
+  </footer>
 
   <script src="{{ asset('js/main.js') }}"></script>
   @stack('scripts')

@@ -1,40 +1,78 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Học lý thuyết 600 câu</title>
-    <link rel="stylesheet" href="{{ asset('css/quiz-style.css') }}">
-</head>
-<body>
+@extends('layouts.app')
+@section('title','Ôn tập')
 
-    <div class="main-container">
-        <header>
-            <h1>Học lý thuyết 600 câu lái xe ô tô Online | Luật mới</h1>
-        </header>
+@push('styles')
+  <link rel="stylesheet" href="{{ asset('css/quiz-style.css') }}">
+@endpush
 
-        <div class="quiz-wrapper">
-            <div class="question-grid"></div>
+@section('content')
+<div class="container quiz-page">
+  <div class="quiz-banner img-holder ratio-16x9"
+       style="background-image:url('{{ asset('images/hinhanh/banner1.png') }}')"></div>
 
-            <div class="question-area">
-                <div id="question-container">
-                    <p>Đang tải câu hỏi aaaa...</p>
-                </div>
+  <h1 class="quiz-heading">Xe ô tô | Luật mới</h1>
 
-                <div class="navigation-buttons">
-                    <button id="prev-btn" class="nav-btn" disabled>&lt;&lt; Câu trước</button>
-                    <button id="next-btn" class="nav-btn" disabled>Câu sau &gt;&gt;</button>
-                </div>
-            </div>
+  <div class="quiz-layout quiz-wrapper">
+    {{-- SIDEBAR --}}
+    <aside class="quiz-sidebar">
+      <div class="sidebar-card">
+        <label class="sidebar-label">Tìm kiếm</label>
+        <input id="qSearch" class="sidebar-input" placeholder="Nhập số câu... (1–600)">
+      </div>
+
+      <div class="question-grid">
+        @for ($i = 1; $i <= 600; $i++)
+          <a class="question-number"
+             href="{{ url('/on-tap/cau-hoi/'.$i) }}"
+             @if(isset($initialStt) && (int)$initialStt === $i) aria-current="page" @endif>
+            {{ $i }}
+          </a>
+        @endfor
+      </div>
+
+      <div class="sidebar-actions">
+        <a class="pill" href="{{ url('/on-tap/cau-hoi/1') }}">Thi thử đề thi</a>
+        <a class="pill" href="{{ url('/on-tap/cau-hoi') }}">20 bộ đề</a>
+      </div>
+    </aside>
+
+    {{-- MAIN --}}
+    <section class="quiz-main">
+      <div class="question-card">
+        <div id="question-container"><p>Đang tải câu hỏi…</p></div>
+        <div class="navigation-buttons">
+          <button id="prev-btn" class="nav-btn" disabled>&lt;&lt; Câu trước</button>
+          <button id="next-btn" class="nav-btn" disabled>Câu sau &gt;&gt;</button>
         </div>
-    </div>
+      </div>
+    </section>
+  </div>
 
-    {{-- Cấu hình endpoint JSON để JS fetch dữ liệu câu hỏi + ảnh --}}
-    <script>
-        window.QUESTION_API = "{{ url('/cauhoi/json') }}";
-    </script>
+  <div class="quiz-extra img-holder" style="height:340px">
+    <span>Nội dung thêm sau</span>
+  </div>
+</div>
+@endsection
 
-    {{-- Liên kết tới file Javascript đã được viết lại --}}
-    <script src="{{ asset('js/quiz-logic.js') }}"></script>
-</body>
-</html>
+@push('scripts')
+  <script>
+    window.QUIZ_CONFIG = {
+      apiBase: "{{ url('/api/cau-hoi') }}",
+      initialStt: {{ $initialStt ?? 'null' }}
+    };
+    window.QUESTION_API = window.QUIZ_CONFIG.apiBase;
+
+    // Tìm số câu và nhảy tới khi Enter
+    (function(){
+      const base = "{{ url('/on-tap/cau-hoi') }}";
+      const ip = document.getElementById('qSearch');
+      ip?.addEventListener('keydown', function(e){
+        if (e.key === 'Enter') {
+          const n = parseInt(ip.value, 10);
+          if (n >= 1 && n <= 600) window.location = base + '/' + n;
+        }
+      });
+    })();
+  </script>
+  <script src="{{ asset('js/quiz-logic.js') }}" defer></script>
+@endpush

@@ -4,34 +4,32 @@ namespace App\Http\Controllers;
 
 use App\Models\LoaiBangLai;
 use App\Models\CauHoi;
-use App\Models\DapAn;
 use App\Models\CauHoiBangLai;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Schema;
 
 class ThiController extends Controller
 {
-    // GET /api/thi/presets
+    /**
+     * GET /api/thi/presets
+     */
     public function presets()
     {
-        // Lấy trực tiếp từ bảng tblloaibanglai cho chắc
         $bangs = LoaiBangLai::where('active', 1)
-                 ->orderBy('id')
-                 ->get(['id','ten','socauhoi','mincauhoidung','active']);
+            ->orderBy('id')
+            ->get(['id', 'ten', 'socauhoi', 'mincauhoidung', 'active']);
 
-        // thời gian mặc định theo số câu (có thể chỉnh theo ý bạn)
         $presets = $bangs->mapWithKeys(function ($b) {
-            $soCau = (int)($b->socauhoi ?: 25);
-            $thoiGian = max(10, (int)ceil($soCau * 1.2)); // ví dụ: ~1.2 phút / câu
+            $soCau    = (int) ($b->socauhoi ?: 25);
+            $thoiGian = max(10, (int) ceil($soCau * 1.2));
             return [
                 strtoupper(trim($b->ten)) => [
                     'so_cau'       => $soCau,
                     'thoi_gian'    => $thoiGian,
-                    'dau_tu'       => (int)($b->mincauhoidung ?: floor($soCau * 0.8)),
-                    'min_cau_liet' => 0, // tối giản: không ép số câu liệt tối thiểu
-                ]
+                    'dau_tu'       => (int) ($b->mincauhoidung ?: floor($soCau * 0.8)),
+                    'min_cau_liet' => 0,
+                ],
             ];
         });
 
@@ -41,53 +39,65 @@ class ThiController extends Controller
         ]);
     }
 
-    // POST /api/thi/tao-de  body: { "hang": "B1" }
+    /**
+     * POST /api/thi/tao-de  body: { "hang": "B1" }
+     * Trả về câu hỏi + đáp án (đã trộn nếu muốn) nhưng KHÔNG lộ đáp án đúng.
+     */
     public function create(Request $request)
     {
         $request->validate(['hang' => 'required|string']);
         $hang = strtoupper(trim($request->input('hang')));
 
-        // tìm hạng theo cột 'ten'
-        $bang = LoaiBangLai::where('ten', $hang)->orWhere('ten', 'like', "%{$hang}%")->first();
+        $bang = LoaiBangLai::where('ten', $hang)
+            ->orWhere('ten', 'like', "%{$hang}%")
+            ->first();
+
         if (!$bang) {
             return response()->json(['message' => 'Hạng không hợp lệ'], 422);
         }
 
-        $soCau    = (int)($bang->socauhoi ?: 25);
-        $thoiGian = max(10, (int)ceil($soCau * 1.2));
-        $dauTu    = (int)($bang->mincauhoidung ?: floor($soCau * 0.8));
+        $soCau    = (int) ($bang->socauhoi ?: 25);
+        $thoiGian = max(10, (int) ceil($soCau * 1.2));
+        $dauTu    = (int) ($bang->mincauhoidung ?: floor($soCau * 0.8));
 
-        // Lọc ngân hàng câu theo mapping (nếu có); nếu không thì lấy toàn bộ câu active
         $idsTheoBang = CauHoiBangLai::where('BangLaiId', $bang->id)->pluck('CauHoiId');
-        $query = CauHoi::where('active', 1);
+
+        $query = CauHoi::where('active', 1)
+            ->with(['hinhAnhs' => function ($q) {
+                $q->where('active', 1)->orderBy('stt');
+            }]);
+
         if ($idsTheoBang->count() > 0) {
             $query->whereIn('id', $idsTheoBang);
         }
-        $all = $query->get(['id','stt','noidung','cauliet']);
+
+        $all = $query->get(['id', 'stt', 'noidung', 'cauliet']);
 
         if ($all->count() === 0) {
             return response()->json(['message' => 'Không có câu hỏi khả dụng'], 404);
         }
 
-        // xáo trộn & lấy đủ số câu
         $chon = $all->shuffle()->take($soCau);
         if ($chon->count() < $soCau) {
             return response()->json(['message' => 'Không đủ câu hỏi để lập đề'], 500);
         }
 
-        // chuẩn bị dữ liệu câu + đáp án (không trả đáp án đúng)
         $payloadQuestions = [];
-        $answerKey = [];
+        $answerKey        = [];
 
         foreach ($chon as $q) {
-            $answers = $q->dapAn()->get(['id','stt','noidung','caudung'])
-                         ->map(fn($a) => ['id'=>$a->id,'stt'=>$a->stt,'text'=>$a->noidung])
-                         ->values()->all();
+            $answers = $q->dapAns()->get(['id','stt','noidung','caudung'])
+                ->map(fn($a) => ['id'=>$a->id,'stt'=>$a->stt,'text'=>$a->noidung])
+                ->values()->all();
 
-            shuffle($answers); // trộn đáp án hiển thị
+            // Nếu muốn trộn đáp án hiển thị, bỏ comment dòng sau:
+            // shuffle($answers);
 
-            // chỉ dùng đúng cột 'caudung = 1'
-            $correctIds = $q->dapAn()->where('caudung', 1)->pluck('id')->all();
+            $imgs = $q->hinhAnhs()->get(['id','ten'])
+                ->map(fn($h) => ['id'=>$h->id, 'ten'=>$h->ten, 'url'=>$h->url])
+                ->values()->all();
+
+            $correctIds = $q->dapAns()->where('caudung', 1)->pluck('id')->all();
             $answerKey[$q->id] = $correctIds;
 
             $payloadQuestions[] = [
@@ -96,35 +106,42 @@ class ThiController extends Controller
                 'text'    => $q->noidung,
                 'is_liet' => (int)$q->cauliet === 1,
                 'answers' => $answers,
+                'images'  => $imgs,
             ];
         }
 
-        // lưu state vào session để chấm
-        $examId = (string) Str::uuid();
+        $examId    = (string) Str::uuid();
         $expiresAt = Carbon::now()->addMinutes($thoiGian);
 
         session([
             "exams.$examId" => [
-                'hang'          => $hang,
-                'preset'        => ['so_cau'=>$soCau,'thoi_gian'=>$thoiGian,'dau_tu'=>$dauTu],
-                'question_ids'  => collect($payloadQuestions)->pluck('id')->all(),
-                'answer_key'    => $answerKey,
-                'liet_ids'      => $chon->where('cauliet', 1)->pluck('id')->all(),
-                'expires_at'    => $expiresAt->toIso8601String(),
-            ]
+                'hang'         => $hang,
+                'preset'       => [
+                    'so_cau'    => $soCau,
+                    'thoi_gian' => $thoiGian,
+                    'dau_tu'    => $dauTu,
+                ],
+                'question_ids' => collect($payloadQuestions)->pluck('id')->all(),
+                'answer_key'   => $answerKey,
+                'liet_ids'     => $chon->where('cauliet', 1)->pluck('id')->all(),
+                'expires_at'   => $expiresAt->toIso8601String(),
+            ],
         ]);
 
         return response()->json([
-            'exam_id'       => $examId,
-            'hang'          => $hang,
-            'expires_at'    => $expiresAt->toIso8601String(),
-            'thoi_gian_phut'=> $thoiGian,
-            'so_cau'        => $soCau,
-            'questions'     => $payloadQuestions,
+            'exam_id'        => $examId,
+            'hang'           => $hang,
+            'expires_at'     => $expiresAt->toIso8601String(),
+            'thoi_gian_phut' => $thoiGian,
+            'so_cau'         => $soCau,
+            'questions'      => $payloadQuestions,
         ]);
     }
 
-    // POST /api/thi/nop-bai  body: { "exam_id":"...", "answers":[{"question_id":1,"answer_id":2}, ...] }
+    /**
+     * POST /api/thi/nop-bai
+     * body: { "exam_id":"...", "answers":[{"question_id":1,"answer_id":2}, ...] }
+     */
     public function submit(Request $request)
     {
         $request->validate([
@@ -139,50 +156,63 @@ class ThiController extends Controller
             return response()->json(['message' => 'Phiên thi không tồn tại hoặc đã hết hạn'], 410);
         }
 
-        $answers  = collect($request->input('answers'));
-        $answerKey = $state['answer_key'] ?? [];
+        $expired = false;
+        if (!empty($state['expires_at'])) {
+            $expired = Carbon::parse($state['expires_at'])->isPast();
+        }
+
+        $answers   = collect($request->input('answers'));
+        $answerKey = $state['answer_key'] ?? []; // {qid => [aid,...]}
         $lietIds   = $state['liet_ids'] ?? [];
         $preset    = $state['preset'] ?? ['dau_tu' => 0];
 
-        // map user answers
-        $mapUser = [];
+        // Map câu -> đáp án người dùng chọn (1 đáp án/câu)
+        $mapUser = []; // {qid => aid}
         foreach ($answers as $ans) {
-            $qid = (int)$ans['question_id'];
-            $aid = (int)$ans['answer_id'];
-            $mapUser[$qid] = $aid;
+            $qid = (int) ($ans['question_id'] ?? 0);
+            $aid = (int) ($ans['answer_id'] ?? 0);
+            if ($qid > 0 && $aid > 0) {
+                $mapUser[$qid] = $aid;
+            }
         }
 
         $correctCount = 0;
-        $wrong = [];
-        $lietWrong = false;
+        $wrong        = [];
+        $lietWrong    = false;
 
         foreach ($answerKey as $qid => $correctIds) {
-            $userAid = $mapUser[$qid] ?? null;
-            $isCorrect = $userAid && in_array($userAid, $correctIds);
+            $userAid   = $mapUser[$qid] ?? null;
+            $isCorrect = $userAid && in_array($userAid, $correctIds, true);
+
             if ($isCorrect) {
                 $correctCount++;
             } else {
-                $wrong[] = (int)$qid;
+                $wrong[] = (int) $qid;
                 if (in_array($qid, $lietIds, true)) {
-                    $lietWrong = true; // sai câu liệt → rớt
+                    $lietWrong = true; // sai câu liệt ⇒ rớt
                 }
             }
         }
 
         $total  = count($answerKey);
-        $passed = ($correctCount >= (int)($preset['dau_tu'] ?? 0)) && !$lietWrong;
+        $passed = ($correctCount >= (int) ($preset['dau_tu'] ?? 0)) && !$lietWrong;
 
-        // xóa session
+        // Xoá session sau khi chấm (tuỳ nhu cầu có thể giữ lại để xem tiếp)
         session()->forget("exams.$examId");
 
         return response()->json([
-            'passed'  => $passed,
-            'reason'  => $passed ? null : ($lietWrong ? 'Sai câu liệt' : 'Không đủ số câu đúng tối thiểu'),
-            'total'   => $total,
-            'correct' => $correctCount,
-            'required'=> (int)($preset['dau_tu'] ?? 0),
+            'passed'   => $passed,
+            'reason'   => $passed ? null : ($lietWrong ? 'Sai câu liệt' : 'Không đủ số câu đúng tối thiểu'),
+            'total'    => $total,
+            'correct'  => $correctCount,
+            'required' => (int) ($preset['dau_tu'] ?? 0),
             'wrong_question_ids' => $wrong,
             'liet_wrong' => $lietWrong,
+            'expired'    => $expired,
+
+            // === Thêm cho bảng xem lại ===
+            'correct_map' => $answerKey, // map đáp án đúng
+            'user_map'    => $mapUser,   // map đáp án người dùng đã chọn
         ]);
     }
 }
