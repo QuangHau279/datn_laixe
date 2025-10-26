@@ -117,4 +117,57 @@ class CauHoiController extends Controller
             'images'       => $images ?? [],
         ]);
     }
+    public function search(\Illuminate\Http\Request $req)
+{
+    $q = trim((string)$req->query('q', ''));
+    if ($q === '') {
+        return response()->json(['items' => []]);
+    }
+
+    // Nếu gõ số -> trả về đúng câu đó (ưu tiên)
+    if (ctype_digit($q)) {
+        $stt = (int)$q;
+        $row = \App\Models\CauHoi::query()
+            ->select('id','stt','noi_dung')
+            ->where('stt', $stt)
+            ->first();
+
+        return response()->json([
+            'items' => $row ? [[
+                'id'      => $row->id,
+                'stt'     => $row->stt,
+                'snippet' => \Illuminate\Support\Str::limit(strip_tags($row->noi_dung), 120),
+            ]] : []
+        ]);
+    }
+
+    // Tìm theo nội dung (và có thể mở rộng sang đáp án nếu bạn có bảng/field)
+    $items = \App\Models\CauHoi::query()
+        ->select('id','stt','noi_dung')
+        ->where('noi_dung', 'like', '%'.$q.'%')
+        ->orderBy('stt')
+        ->limit(10)
+        ->get()
+        ->map(function($r) use ($q){
+            $plain = strip_tags($r->noi_dung);
+            // làm snippet ngắn, có chứa từ khóa
+            $pos = mb_stripos($plain, $q);
+            if ($pos === false) {
+                $snippet = \Illuminate\Support\Str::limit($plain, 120);
+            } else {
+                $start = max(0, $pos - 25);
+                $snippet = mb_substr($plain, $start, 120);
+                if ($start > 0) $snippet = '…'.$snippet;
+            }
+            return [
+                'id'      => $r->id,
+                'stt'     => $r->stt,
+                'snippet' => $snippet,
+            ];
+        })
+        ->values();
+
+    return response()->json(['items' => $items]);
+}
+
 }

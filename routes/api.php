@@ -17,3 +17,5 @@ Route::get('/thi/presets', [ThiController::class, 'presets']);
 Route::post('/thi/tao-de', [ThiController::class, 'create']);
 Route::post('/thi/nop-bai', [ThiController::class, 'submit']);
 
+Route::get('search',        [CauHoiController::class, 'search'])->name('search');
+

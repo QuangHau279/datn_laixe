@@ -5,11 +5,18 @@ use App\Http\Controllers\CauHoiController;
 use App\Http\Controllers\HinhAnhController;
 use App\Http\Controllers\ThiController;
 use App\Http\Controllers\PracticeController;
+use App\Http\Controllers\TrafficSignController;
 
 /* ========= TRANG CƠ BẢN ========= */
 Route::view('/', 'home.index')->name('home');
 Route::view('/mo-phong', 'pages.simulation')->name('simulation');
 Route::view('/bien-bao', 'pages.bienbao')->name('bienbao');
+
+/* ========= BIỂN BÁO GIAO THÔNG ========= */
+Route::prefix('traffic-signs')->name('traffic-signs.')->group(function () {
+    Route::get('/', [TrafficSignController::class, 'index'])->name('index');
+    Route::get('/{slug}', [TrafficSignController::class, 'show'])->name('show');
+});
 
 Route::get('/thuc-hanh-lai-xe', [PracticeController::class, 'videosThucHanh'])
      ->name('videothuchanh');
