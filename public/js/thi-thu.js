@@ -3,6 +3,7 @@
 // ====== DOM refs ======
 const selHang   = document.getElementById('selHang');
 const btnStart  = document.getElementById('btnStart');
+const selDe     = document.getElementById('selDe');
 // Mobile controls (nếu có trong DOM)
 const selHangM  = document.getElementById('selHangM');
 const btnStartM = document.getElementById('btnStartM');
@@ -65,9 +66,19 @@ async function postJSON(url, payload) {
 
 // Helper: lấy giá trị hạng (ưu tiên mobile nếu có)
 function getHangValue() {
-  const vm = selHangM && selHangM.value;
-  if (vm) return vm;
-  return selHang && selHang.value ? selHang.value : '';
+  // Kiểm tra mobile select trước
+  if (selHangM && selHangM.value) {
+    // Đồng bộ với desktop select nếu có
+    if (selHang) selHang.value = selHangM.value;
+    return selHangM.value;
+  }
+  // Nếu không có mobile, dùng desktop
+  if (selHang && selHang.value) {
+    // Đồng bộ với mobile select nếu có
+    if (selHangM) selHangM.value = selHang.value;
+    return selHang.value;
+  }
+  return '';
 }
 
 // ====== Presets ======
@@ -85,7 +96,7 @@ async function loadPresets() {
   // đổ option cho cả desktop & mobile (nếu có)
   function fillSelect(selectEl){
     if (!selectEl) return;
-    selectEl.innerHTML = '';
+    selectEl.innerHTML = '<option value="">-- Chọn hạng --</option>';
     Object.keys(presetMap).forEach(code => {
       const opt = document.createElement('option');
       opt.value = code;
@@ -95,6 +106,34 @@ async function loadPresets() {
   }
   fillSelect(selHang);
   fillSelect(selHangM);
+
+  // đổ options cho chọn ĐỀ (5 bộ + Ngẫu nhiên)
+  if (selDe) {
+    selDe.innerHTML = '';
+    const opts = [
+      {v:'RANDOM', t:'Đề ngẫu nhiên'},
+      {v:'1', t:'Đề 1'},
+      {v:'2', t:'Đề 2'},
+      {v:'3', t:'Đề 3'},
+      {v:'4', t:'Đề 4'},
+      {v:'5', t:'Đề 5'},
+    ];
+    opts.forEach(o => {
+      const el = document.createElement('option');
+      el.value = o.v; el.textContent = o.t; selDe.appendChild(el);
+    });
+    selDe.value = 'RANDOM';
+  }
+  
+  // Đồng bộ khi thay đổi select
+  if (selHang && selHangM) {
+    selHang.addEventListener('change', function() {
+      selHangM.value = this.value;
+    });
+    selHangM.addEventListener('change', function() {
+      selHang.value = this.value;
+    });
+  }
 }
 loadPresets();
 
@@ -126,16 +165,29 @@ function startTimer(){
 async function startExam() {
   if (mustChooseHang()) return;
 
-  // đồng bộ: nếu user bấm ở mobile, set lại vào select desktop (nếu tồn tại)
+  // Lấy giá trị hạng và đảm bảo đồng bộ
   const hang = getHangValue();
-  if (selHang) selHang.value = hang;
+  
+  // Đồng bộ cả 2 select
+  if (selHang && selHang.value !== hang) selHang.value = hang;
+  if (selHangM && selHangM.value !== hang) selHangM.value = hang;
+  
+  // Kiểm tra lại giá trị
+  if (!hang) {
+    alert('Vui lòng chọn hạng thi trước.');
+    return;
+  }
+  
+  console.log('Bắt đầu thi với hạng:', hang);
 
   // reset review state
   reviewMode = false; wrongIds = []; lietWrong = false;
   if (revWrap) revWrap.style.display = 'none';
   if (revTbl)  revTbl.innerHTML = '';
 
-  const res = await postJSON('/api/thi/tao-de', { hang });
+  const payload = { hang };
+  if (selDe && selDe.value) payload.de = selDe.value;
+  const res = await postJSON('/api/thi/tao-de', payload);
 
   if (!res.ok) {
     let msg = 'Lỗi tạo đề';

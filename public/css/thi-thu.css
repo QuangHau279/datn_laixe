@@ -143,7 +143,7 @@ body{
 @media (max-width:1024px){ .qimage.has-one img{max-height:38vh} }
 @media (max-width:768px){
   .layout{grid-template-columns:1fr; padding:0; gap:8px}
-  .left{display:none} /* ẩn cột trái trên mobile */
+  .left{display:none !important} /* ẩn cột trái trên mobile */
   .qtext{font-size:16px; line-height:1.45}
   .ans{padding:12px; font-size:15px}
   .exam-foot{
@@ -151,13 +151,56 @@ body{
     padding:8px; margin-top:8px; border-top:var(--b);
   }
   .qimage.has-one img{max-height:62vh}
+  
+  /* Header cho mobile */
+  .page-title{margin:10px 8px; padding:8px 12px; font-size:15px}
+  .timebar{margin:0 8px 8px; padding:6px 10px; font-size:14px}
 }
 
 /* ========== MOBILE CONTROLS (hiện trên mobile) ========== */
 .mobile-controls{
-  display:none; gap:8px; align-items:center; padding:10px; margin:10px auto;
-  max-width:1100px; background:#fff; border:var(--b); border-radius:8px;
+  display:none; 
+  flex-wrap: wrap;
+  gap:10px; 
+  align-items:center; 
+  padding:12px 14px; 
+  margin:10px auto;
+  max-width:1100px; 
+  background:#fff; 
+  border:var(--b); 
+  border-radius:8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
-.mobile-controls label{margin-right:6px; color:#374151}
-.mobile-controls select{height:34px; padding:0 8px; border:1px solid #cfd6e6; border-radius:6px}
-@media (max-width:768px){ .mobile-controls{display:flex} }
+.mobile-controls label{
+  margin-right:8px; 
+  color:#374151; 
+  font-weight:600;
+  font-size:14px;
+  flex-shrink: 0;
+}
+.mobile-controls select{
+  flex: 1;
+  min-width: 120px;
+  height:40px; 
+  padding:0 12px; 
+  border:1px solid #cfd6e6; 
+  border-radius:6px;
+  font-size:15px;
+  background:#fff;
+  cursor:pointer;
+}
+.mobile-controls select:focus{
+  outline:none;
+  border-color:var(--blue);
+  box-shadow: 0 0 0 3px rgba(42,123,215,0.1);
+}
+.mobile-controls .btn{
+  flex-shrink: 0;
+  min-width: 100px;
+  height: 40px;
+}
+@media (max-width:768px){ 
+  .mobile-controls{
+    display:flex !important; 
+  } 
+}

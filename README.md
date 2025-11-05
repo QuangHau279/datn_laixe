@@ -1,11 +1,128 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🚗 LyThuyetLaiXe.vn - Hệ thống ôn thi GPLX
+
+Hệ thống ôn thi giấy phép lái xe (GPLX) với đầy đủ tính năng: ôn tập 600 câu lý thuyết, thi thử trực tuyến, thi mô phỏng, và **trợ lý AI chatbot** hỗ trợ học tập 24/7.
 
 <p align="center">
 <a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
+
+## ✨ Tính năng
+
+- ✅ **Ôn tập lý thuyết**: 600 câu hỏi với hình ảnh minh họa
+- ✅ **Thi thử trực tuyến**: 20 bộ đề theo chuẩn thi thật
+- ✅ **Thi mô phỏng**: 120 tình huống giao thông thực tế
+- ✅ **Biển báo giao thông**: Hướng dẫn đầy đủ các loại biển báo
+- ✅ **🤖 Trợ lý AI Chatbot**: Hỏi đáp về lý thuyết lái xe 24/7
+- ✅ **Responsive**: Tối ưu cho mobile, tablet, desktop
+
+## 🚀 Hướng dẫn cài đặt
+
+### 1. Cài đặt Laravel
+
+```bash
+# Clone repository
+git clone <repo-url>
+cd datn_laixe
+
+# Cài đặt dependencies
+composer install
+npm install
+
+# Tạo file .env
+cp .env.example .env
+php artisan key:generate
+
+# Chạy migration và seeder
+php artisan migrate --seed
+```
+
+### 2. Cài đặt Chatbox AI
+
+Chatbox sử dụng Google Gemini AI để trả lời câu hỏi về lý thuyết lái xe.
+
+```bash
+# Vào thư mục chatbox-api
+cd chatbox-api
+
+# Cài đặt Node.js dependencies
+npm install
+
+# Tạo file .env
+echo "GEMINI_API_KEY=your_gemini_api_key_here" > .env
+echo "PORT=7070" >> .env
+
+# Khởi động chatbox API
+npm start
+```
+
+**Lấy Gemini API Key:**
+1. Truy cập [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Đăng nhập bằng Google account
+3. Tạo API key mới
+4. Copy key vào file `.env` của `chatbox-api/`
+
+### 3. Cấu hình Laravel .env
+
+Thêm cấu hình chatbox API vào `.env`:
+
+```env
+CHAT_API_URL=http://localhost:7070/chat
+```
+
+### 4. Khởi động ứng dụng
+
+```bash
+# Terminal 1: Khởi động Laravel
+php artisan serve
+
+# Terminal 2: Khởi động Chatbox API (nếu chưa chạy)
+cd chatbox-api
+npm start
+```
+
+Truy cập: `http://localhost:8000`
+
+## 💬 Chatbox AI
+
+Chatbox floating xuất hiện ở mọi trang, cho phép người dùng:
+
+- Hỏi về lý thuyết lái xe
+- Giải thích biển báo giao thông
+- Phân tích câu hỏi thi
+- Hướng dẫn tình huống mô phỏng
+
+**Prompt AI được tối ưu** để tập trung vào:
+- Luật giao thông đường bộ Việt Nam
+- 600 câu hỏi lý thuyết lái xe
+- Xử phạt vi phạm giao thông
+- An toàn lái xe
+
+## 📁 Cấu trúc dự án
+
+```
+datn_laixe/
+├── app/                    # Laravel MVC
+│   ├── Http/Controllers/   # Controllers
+│   ├── Models/             # Eloquent Models
+│   └── ...
+├── chatbox-api/            # Node.js AI Chatbot
+│   ├── server.js           # Express API server
+│   └── package.json
+├── database/               # Migrations & Seeders
+├── public/                 # Public assets
+│   ├── css/main.css        # Styles (kèm chatbox)
+│   └── js/main.js          # JavaScript (kèm chatbox)
+├── resources/views/        # Blade templates
+│   └── layouts/app.blade.php  # Main layout với chatbox
+└── routes/web.php          # Web routes
+```
+
+## 📝 License
+
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+---
 
 ## About Laravel
 

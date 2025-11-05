@@ -29,6 +29,8 @@ class ThiController extends Controller
                     'thoi_gian'    => $thoiGian,
                     'dau_tu'       => (int) ($b->mincauhoidung ?: floor($soCau * 0.8)),
                     'min_cau_liet' => 0,
+                    // 5 bộ đề mẫu + 1 đề ngẫu nhiên
+                    'de_options'   => [1,2,3,4,5,'RANDOM'],
                 ],
             ];
         });
@@ -45,22 +47,46 @@ class ThiController extends Controller
      */
     public function create(Request $request)
     {
-        $request->validate(['hang' => 'required|string']);
+        $request->validate([
+            'hang' => 'required|string',
+            'de'   => 'nullable',
+        ]);
         $hang = strtoupper(trim($request->input('hang')));
+        $de   = $request->input('de');
 
+        // Tìm hạng chính xác trước
         $bang = LoaiBangLai::where('ten', $hang)
-            ->orWhere('ten', 'like', "%{$hang}%")
+            ->where('active', 1)
             ->first();
 
+        // Nếu không tìm thấy, thử tìm gần đúng
         if (!$bang) {
-            return response()->json(['message' => 'Hạng không hợp lệ'], 422);
+            $bang = LoaiBangLai::where('ten', 'like', "%{$hang}%")
+                ->where('active', 1)
+                ->first();
         }
+
+        if (!$bang) {
+            return response()->json([
+                'message' => "Hạng '{$hang}' không hợp lệ. Vui lòng chọn lại hạng thi."
+            ], 422);
+        }
+        
+        // Lưu hạng thực tế được sử dụng
+        $hang = strtoupper(trim($bang->ten));
 
         $soCau    = (int) ($bang->socauhoi ?: 25);
         $thoiGian = max(10, (int) ceil($soCau * 1.2));
         $dauTu    = (int) ($bang->mincauhoidung ?: floor($soCau * 0.8));
 
-        $idsTheoBang = CauHoiBangLai::where('BangLaiId', $bang->id)->pluck('CauHoiId');
+        // Nếu chọn một bộ đề cụ thể (1..5) thì lọc theo cột BoDe
+        if (is_numeric($de)) {
+            $idsTheoBang = CauHoiBangLai::where('BangLaiId', $bang->id)
+                ->where('BoDe', (int)$de)
+                ->pluck('CauHoiId');
+        } else {
+            $idsTheoBang = CauHoiBangLai::where('BangLaiId', $bang->id)->pluck('CauHoiId');
+        }
 
         $query = CauHoi::where('active', 1)
             ->with(['hinhAnhs' => function ($q) {
@@ -77,7 +103,22 @@ class ThiController extends Controller
             return response()->json(['message' => 'Không có câu hỏi khả dụng'], 404);
         }
 
-        $chon = $all->shuffle()->take($soCau);
+        // Tạo đề:
+        // - Nếu de là RANDOM (hoặc null) ⇒ chọn ngẫu nhiên nhưng đảm bảo có ít nhất 1 câu liệt.
+        // - Nếu de là 1..5 ⇒ theo bộ cố định (danh sách câu đã xác định), vẫn giữ nguyên số lượng theo preset.
+        if (!is_numeric($de)) {
+            $liet = $all->where('cauliet', 1);
+            if ($liet->count() > 0) {
+                $oneLiet = $liet->random(1);
+                $remain  = $all->whereNotIn('id', $oneLiet->pluck('id'))
+                               ->shuffle()->take(max(0, $soCau - 1));
+                $chon = $oneLiet->concat($remain)->shuffle();
+            } else {
+                $chon = $all->shuffle()->take($soCau);
+            }
+        } else {
+            $chon = $all->shuffle()->take($soCau);
+        }
         if ($chon->count() < $soCau) {
             return response()->json(['message' => 'Không đủ câu hỏi để lập đề'], 500);
         }

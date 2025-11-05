@@ -31,7 +31,20 @@ class PracticeController extends Controller
                 'error'  => 'Không lấy được danh sách video từ kênh (API và RSS đều lỗi).',
                 'main'   => null,
                 'others' => [],
+                'keyword' => '',
+                'totalResults' => 0,
             ]);
+        }
+
+        // Lấy keyword tìm kiếm từ query string
+        $keyword = trim((string) $request->query('q', ''));
+        
+        // Filter videos theo keyword nếu có
+        if ($keyword) {
+            $items = collect($items)->filter(function ($item) use ($keyword) {
+                $searchText = strtolower($item['title'] . ' ' . ($item['desc'] ?? ''));
+                return str_contains($searchText, strtolower($keyword));
+            })->values()->all();
         }
 
         // Chọn video chính theo ?v=... hoặc video mới nhất
@@ -43,6 +56,8 @@ class PracticeController extends Controller
             'error'  => null,
             'main'   => $main,
             'others' => $others,
+            'keyword' => $keyword,
+            'totalResults' => count($items),
         ]);
     }
 

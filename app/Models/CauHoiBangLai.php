@@ -9,6 +9,6 @@ class CauHoiBangLai extends Model
     protected $table = 'tblcauhoibanglai';
     public $timestamps = false;
 
-    // id, CauHoiId, BangLaiId
-    protected $fillable = ['CauHoiId','BangLaiId'];
+    // id, CauHoiId, BangLaiId, BoDe
+    protected $fillable = ['CauHoiId','BangLaiId','BoDe'];
 }

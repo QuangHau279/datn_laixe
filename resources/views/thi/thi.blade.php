@@ -26,6 +26,11 @@
         <button id="btnStart" type="button" class="btn btn-start">Bắt đầu</button>
       </div>
 
+      <div class="hang-row" style="margin-top:8px">
+        <label for="selDe">Đề</label>
+        <select id="selDe"></select>
+      </div>
+
       <div class="subtime">Thời gian: <b id="tg">--</b> phút</div>
 
       <div id="grid" class="pad"></div>

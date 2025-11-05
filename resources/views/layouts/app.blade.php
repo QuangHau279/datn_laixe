@@ -56,6 +56,14 @@
     </div>
   </footer>
 
+  <script>
+    // Set API URL cho chatbox
+    (function() {
+      const apiUrl = @json(config('services.chat.api_url', 'http://localhost:7070/chat'));
+      window.chatApiUrl = apiUrl || 'http://localhost:7070/chat';
+      console.log('[Chatbox Config] API URL set to:', window.chatApiUrl);
+    })();
+  </script>
   <script src="{{ asset('js/main.js') }}"></script>
   @stack('scripts')
 </body>

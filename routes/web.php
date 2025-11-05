@@ -6,10 +6,12 @@ use App\Http\Controllers\HinhAnhController;
 use App\Http\Controllers\ThiController;
 use App\Http\Controllers\PracticeController;
 use App\Http\Controllers\TrafficSignController;
+use App\Http\Controllers\SimulationController;
 
 /* ========= TRANG CƠ BẢN ========= */
 Route::view('/', 'home.index')->name('home');
-Route::view('/mo-phong', 'pages.simulation')->name('simulation');
+Route::get('/mo-phong', [SimulationController::class, 'index'])->name('simulation');
+Route::get('/mo-phong/cau-hinh', [SimulationController::class, 'configPoints'])->name('simulation.config');
 Route::view('/bien-bao', 'pages.bienbao')->name('bienbao');
 
 /* ========= BIỂN BÁO GIAO THÔNG ========= */
@@ -58,6 +60,12 @@ Route::prefix('api')->name('api.')->group(function () {
         Route::post('tao-de',  [ThiController::class, 'create']);
         Route::post('nop-bai', [ThiController::class, 'submit']);
     });
+
+    /* ========= API MÔ PHỎNG ========= */
+    Route::prefix('simulation')->name('simulation.')->group(function () {
+        Route::post('save-points', [SimulationController::class, 'savePoints'])->name('save-points');
+        Route::get('video/{id}', [SimulationController::class, 'getVideo'])->whereNumber('id')->name('video');
+    });
 });
 
 
@@ -65,3 +73,5 @@ Route::prefix('api')->name('api.')->group(function () {
 Route::view('/thi-thu', 'thi.thi')->name('thi.thu');
 Route::get('/thi-thu/de/{id}', fn ($id) => view('thi.lamde', ['deId' => $id]))
     ->whereNumber('id')->name('thi.lamde');
+
+Route::get('/chatbox', fn() => view('pages.chatbox'))->name('chatbox');

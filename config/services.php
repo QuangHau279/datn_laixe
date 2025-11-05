@@ -34,5 +34,8 @@ return [
     'channel_id' => env('YT_CHANNEL_ID'),
     ],
 
+    'chat' => [
+        'api_url' => env('CHAT_API_URL', 'http://localhost:7070/chat'),
+    ]
 
 ];
