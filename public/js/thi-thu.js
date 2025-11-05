@@ -246,29 +246,7 @@ function renderGrid() {
     no.addEventListener('click', () => { currentIndex = i; renderQuestion(); setActiveNum(); });
     item.appendChild(no);
 
-    // Cụm ô nhỏ 1..N theo số đáp án
-    const opts = document.createElement('div');
-    opts.className = 'g-opts';
-    (q.answers || []).forEach((a, idx) => {
-      const o = document.createElement('div');
-      o.className = 'g-opt';
-      o.textContent = String(idx + 1);
-      o.title = 'Chọn đáp án ' + (idx + 1);
-      o.dataset.qid = String(q.id);
-      o.dataset.aid = String(a.id);
-      if (selections[q.id] === a.id) o.classList.add('selected');
-
-      if (!reviewMode) {
-        o.addEventListener('click', (ev) => {
-          ev.stopPropagation();                 // không kích hoạt click số câu
-          selections[q.id] = a.id;              // chọn đáp án
-          renderQuestion();                     // vẽ lại vùng bên phải
-          renderGrid();                         // vẽ lại lưới để cập nhật ô nhỏ
-        });
-      }
-      opts.appendChild(o);
-    });
-    item.appendChild(opts);
+    // Bỏ cụm ô chọn nhỏ; lựa chọn sẽ thực hiện bằng nút ở giữa màn hình
 
     grid.appendChild(item);
   });
