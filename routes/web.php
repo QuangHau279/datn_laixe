@@ -7,6 +7,7 @@ use App\Http\Controllers\ThiController;
 use App\Http\Controllers\PracticeController;
 use App\Http\Controllers\TrafficSignController;
 use App\Http\Controllers\SimulationController;
+use App\Http\Controllers\LeadController;
 
 /* ========= TRANG CƠ BẢN ========= */
 Route::view('/', 'home.index')->name('home');
@@ -48,10 +49,20 @@ Route::redirect('/cauhoi', '/on-tap/cau-hoi', 301);
 
 /* ========= API CHO ÔN TẬP ========= */
 Route::prefix('api')->name('api.')->group(function () {
+    // Route tìm kiếm cho ôn tập lý thuyết 600 câu (phải đặt trước route {stt})
+    Route::get('search', [CauHoiController::class, 'search'])->name('search');
+    
     Route::prefix('cau-hoi')->name('cauhoi.')->group(function () {
         Route::get('grid',          [CauHoiController::class, 'grid'])->name('grid');
         Route::get('{stt}',         [CauHoiController::class, 'byStt'])->whereNumber('stt')->name('byStt');
         Route::get('{id}/hinh-anh', [HinhAnhController::class, 'byId'])->whereNumber('id')->name('hinhanh');
+    });
+
+    /* ========= API CHO XE MÁY (250 CÂU) ========= */
+    Route::prefix('xe-may')->name('xemay.')->group(function () {
+        Route::get('grid',          [CauHoiController::class, 'gridXeMay'])->name('grid');
+        Route::get('search',        [CauHoiController::class, 'searchXeMay'])->name('search');
+        Route::get('cau-hoi/{stt250}', [CauHoiController::class, 'bySttXeMay'])->whereNumber('stt250')->name('byStt');
     });
 
     /* ========= API THI THỬ ========= */
@@ -66,6 +77,9 @@ Route::prefix('api')->name('api.')->group(function () {
         Route::post('save-points', [SimulationController::class, 'savePoints'])->name('save-points');
         Route::get('video/{id}', [SimulationController::class, 'getVideo'])->whereNumber('id')->name('video');
     });
+
+    /* ========= API ĐĂNG KÝ ========= */
+    Route::post('leads', [LeadController::class, 'store'])->name('leads.store');
 });
 
 

@@ -48,7 +48,7 @@
   </main>
 
   <footer class="site-footer"
-          style="--footer-bg: url('{{ asset('images/footer-bg.png') }}');
+          style="--footer-bg: url('{{ asset('images/hinhanh/footer-bg.jpg') }}');
                  --footer-bg-opacity: .18;">
     <div class="container">
       <strong>LYTHUYETLAIXE.VN</strong><br>

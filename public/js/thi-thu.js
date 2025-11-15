@@ -4,6 +4,7 @@
 const selHang   = document.getElementById('selHang');
 const btnStart  = document.getElementById('btnStart');
 const selDe     = document.getElementById('selDe');
+const deGroup   = document.getElementById('deGroup');
 // Mobile controls (nếu có trong DOM)
 const selHangM  = document.getElementById('selHangM');
 const btnStartM = document.getElementById('btnStartM');
@@ -36,6 +37,7 @@ let currentIndex = 0;
 let selections   = {}; // question_id -> answer_id
 let expiresAt    = null;
 let timerTick    = null;
+let selectedDe   = 'RANDOM';
 
 // Review mode
 let reviewMode = false; // đang xem lại sau khi nộp
@@ -45,6 +47,9 @@ let lietWrong  = false; // có sai câu liệt không
 // ==== Thêm state để lưu đáp án đúng và lựa chọn của user sau khi nộp ====
 let correctMap = {};  // { qid: [aid,...] }
 let userMap    = {};  // { qid: aid }
+
+// Lưu exam data để xem lại sau khi kết thúc
+let reviewExam = null;  // exam data đã kết thúc để xem lại
 
 // ====== Helpers (CSRF + POST) ======
 const CSRF_META = document.querySelector('meta[name="csrf-token"]');
@@ -81,61 +86,200 @@ function getHangValue() {
   return '';
 }
 
-// ====== Presets ======
-async function loadPresets() {
-  try {
-    const res = await fetch('/api/thi/preset', { credentials: 'same-origin' });
-    if (!res.ok) throw new Error('preset api not ok');
-    const data = await res.json();
-    presetMap = data && data.presets ? data.presets : {};
-  } catch (e) {
-    console.warn('Preset error', e);
-    presetMap = { A1:{}, A:{}, B1:{}, B:{}, C1:{} };
+// ====== Tạo nhóm button ĐỀ dựa trên preset ======
+function updateDeButtons() {
+  if (!deGroup) return;
+  const hang = getHangValue();
+  if (!hang || !presetMap[hang]) {
+    deGroup.innerHTML = '<p class="muted" style="text-align:center">Chọn hạng để xem các bộ đề</p>';
+    return;
   }
+  
+  const preset = presetMap[hang];
+  const deOpts = preset.de_options || [];
+  
+  if (deOpts.length === 0) {
+    deGroup.innerHTML = '<p class="muted" style="text-align:center">Hạng này chưa có bộ đề</p>';
+    return;
+  }
+  
+  // Sắp xếp: RANDOM đầu tiên, sau đó 1..5
+  const sortedOpts = deOpts.slice().sort((a, b) => {
+    if (a === 'RANDOM') return -1;
+    if (b === 'RANDOM') return 1;
+    return Number(a) - Number(b);
+  });
+  
+  deGroup.innerHTML = '';
+  sortedOpts.forEach((opt, idx) => {
+    const v = String(opt);
+    const t = v === 'RANDOM' ? 'Ngẫu nhiên' : `Đề ${v}`;
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'de-btn' + (idx === 0 ? ' active' : '');
+    b.dataset.de = v;
+    b.textContent = t;
+    deGroup.appendChild(b);
+    
+    if (idx === 0) selectedDe = v; // Mặc định chọn option đầu tiên
+    
+    b.addEventListener('click', () => {
+      // Không cho phép chọn đề khi đang thi
+      if (exam && examId) {
+        alert('Vui lòng kết thúc bài thi hiện tại trước khi chọn đề khác.');
+        return;
+      }
+      
+      selectedDe = v;
+      [...deGroup.querySelectorAll('.de-btn')].forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      // Chỉ chọn đề, không tự động bắt đầu - người dùng phải bấm "Bắt đầu"
+    });
+  });
+}
 
-  // đổ option cho cả desktop & mobile (nếu có)
+// ====== Fill Selects ======
+function fillSelects() {
   function fillSelect(selectEl){
-    if (!selectEl) return;
+    if (!selectEl) {
+      console.warn('fillSelect: selectEl is null');
+      return;
+    }
     selectEl.innerHTML = '<option value="">-- Chọn hạng --</option>';
-    Object.keys(presetMap).forEach(code => {
+    
+    const keys = Object.keys(presetMap);
+    console.log('fillSelects: presetMap keys:', keys);
+    
+    if (keys.length === 0) {
+      console.warn('fillSelects: presetMap is empty!');
+      return;
+    }
+    
+    keys.forEach(code => {
       const opt = document.createElement('option');
       opt.value = code;
       opt.textContent = code;
       selectEl.appendChild(opt);
     });
+    
+    console.log('fillSelects: Added', keys.length, 'options to select');
   }
   fillSelect(selHang);
   fillSelect(selHangM);
+}
 
-  // đổ options cho chọn ĐỀ (5 bộ + Ngẫu nhiên)
-  if (selDe) {
-    selDe.innerHTML = '';
-    const opts = [
-      {v:'RANDOM', t:'Đề ngẫu nhiên'},
-      {v:'1', t:'Đề 1'},
-      {v:'2', t:'Đề 2'},
-      {v:'3', t:'Đề 3'},
-      {v:'4', t:'Đề 4'},
-      {v:'5', t:'Đề 5'},
-    ];
-    opts.forEach(o => {
-      const el = document.createElement('option');
-      el.value = o.v; el.textContent = o.t; selDe.appendChild(el);
-    });
-    selDe.value = 'RANDOM';
+// ====== Presets ======
+async function loadPresets() {
+  console.log('loadPresets: Starting...');
+  try {
+    const res = await fetch('/api/thi/preset', { credentials: 'same-origin' });
+    if (!res.ok) {
+      console.error('loadPresets: API response not OK', res.status, res.statusText);
+      throw new Error('preset api not ok: ' + res.status);
+    }
+    const data = await res.json();
+    console.log('loadPresets: API response:', data);
+    presetMap = data && data.presets ? data.presets : {};
+    console.log('loadPresets: presetMap after assignment:', presetMap);
+    
+    if (Object.keys(presetMap).length === 0) {
+      console.warn('loadPresets: presetMap is empty, using fallback');
+      presetMap = { A1:{}, A:{}, B1:{}, B:{}, C1:{} };
+    }
+  } catch (e) {
+    console.error('loadPresets: Error loading presets', e);
+    presetMap = { A1:{}, A:{}, B1:{}, B:{}, C1:{} };
   }
+
+  // đổ option cho cả desktop & mobile (nếu có)
+  console.log('loadPresets: Calling fillSelects()...');
+  fillSelects();
   
-  // Đồng bộ khi thay đổi select
+  // Đảm bảo select hạng enable khi chưa bắt đầu thi
+  enableControls();
+  
+  // Đồng bộ khi thay đổi select (desktop và mobile) + cập nhật buttons
   if (selHang && selHangM) {
     selHang.addEventListener('change', function() {
+      // Không cho phép thay đổi hạng khi đang thi
+      if (exam && examId) {
+        this.value = getHangValue(); // Khôi phục giá trị cũ
+        alert('Vui lòng kết thúc bài thi hiện tại trước khi chọn hạng khác.');
+        return;
+      }
       selHangM.value = this.value;
+      updateDeButtons(); // Cập nhật buttons khi đổi hạng
     });
     selHangM.addEventListener('change', function() {
+      // Không cho phép thay đổi hạng khi đang thi
+      if (exam && examId) {
+        this.value = getHangValue(); // Khôi phục giá trị cũ
+        alert('Vui lòng kết thúc bài thi hiện tại trước khi chọn hạng khác.');
+        return;
+      }
       selHang.value = this.value;
+      updateDeButtons(); // Cập nhật buttons khi đổi hạng
     });
+  } else {
+    // Nếu chỉ có một trong hai select
+    if (selHang) {
+      selHang.addEventListener('change', function() {
+        // Không cho phép thay đổi hạng khi đang thi
+        if (exam && examId) {
+          this.value = getHangValue(); // Khôi phục giá trị cũ
+          alert('Vui lòng kết thúc bài thi hiện tại trước khi chọn hạng khác.');
+          return;
+        }
+        updateDeButtons();
+      });
+    }
+    if (selHangM) {
+      selHangM.addEventListener('change', function() {
+        // Không cho phép thay đổi hạng khi đang thi
+        if (exam && examId) {
+          this.value = getHangValue(); // Khôi phục giá trị cũ
+          alert('Vui lòng kết thúc bài thi hiện tại trước khi chọn hạng khác.');
+          return;
+        }
+        updateDeButtons();
+      });
+    }
   }
+  
+  // Khởi tạo ban đầu sau khi load preset
+  updateDeButtons();
+  
+  // Đảm bảo select hạng enable sau khi load xong
+  enableControls();
+  
+  console.log('loadPresets: Completed. presetMap has', Object.keys(presetMap).length, 'items');
 }
-loadPresets();
+
+// Đảm bảo load presets sau khi DOM sẵn sàng
+// Và đảm bảo select hạng enable ngay từ đầu
+function initializePage() {
+  console.log('initializePage: Starting initialization...');
+  
+  // Enable controls ngay từ đầu
+  if (selHang) selHang.disabled = false;
+  if (selHangM) selHangM.disabled = false;
+  if (btnStart) btnStart.disabled = false;
+  if (btnStartM) btnStartM.disabled = false;
+  
+  // Load presets
+  loadPresets();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOMContentLoaded: Initializing page...');
+    initializePage();
+  });
+} else {
+  // DOM đã sẵn sàng
+  console.log('DOM ready: Initializing page...');
+  initializePage();
+}
 
 function mustChooseHang(){
   const value = getHangValue();
@@ -145,6 +289,45 @@ function mustChooseHang(){
     return true;
   }
   return false;
+}
+
+// ====== Disable/Enable Controls ======
+function disableControls() {
+  // Disable select hạng
+  if (selHang) selHang.disabled = true;
+  if (selHangM) selHangM.disabled = true;
+  
+  // Disable nút bắt đầu
+  if (btnStart) btnStart.disabled = true;
+  if (btnStartM) btnStartM.disabled = true;
+  
+  // Disable các button đề
+  if (deGroup) {
+    deGroup.querySelectorAll('.de-btn').forEach(btn => {
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+      btn.style.cursor = 'not-allowed';
+    });
+  }
+}
+
+function enableControls() {
+  // Enable select hạng
+  if (selHang) selHang.disabled = false;
+  if (selHangM) selHangM.disabled = false;
+  
+  // Enable nút bắt đầu
+  if (btnStart) btnStart.disabled = false;
+  if (btnStartM) btnStartM.disabled = false;
+  
+  // Enable các button đề
+  if (deGroup) {
+    deGroup.querySelectorAll('.de-btn').forEach(btn => {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.style.cursor = 'pointer';
+    });
+  }
 }
 
 // ====== Timer ======
@@ -177,6 +360,34 @@ async function startExam() {
     alert('Vui lòng chọn hạng thi trước.');
     return;
   }
+
+  // Kiểm tra xem hạng có đề không
+  const preset = presetMap[hang];
+  if (!preset) {
+    alert('Hạng này không hợp lệ. Vui lòng chọn lại.');
+    return;
+  }
+
+  const deOpts = preset.de_options || [];
+  const totalQuestions = preset.total_questions || 0;
+
+  // Kiểm tra xem có đề không
+  if (deOpts.length === 0 && totalQuestions === 0) {
+    alert('Hạng này chưa có bộ đề. Vui lòng chọn hạng khác.');
+    return;
+  }
+
+  // Kiểm tra nếu đang thi thì không cho bắt đầu đề mới
+  if (exam && examId) {
+    if (!confirm('Bạn đang có một bài thi chưa hoàn thành. Bạn có muốn bỏ bài thi hiện tại và bắt đầu bài thi mới?')) {
+      return;
+    }
+    // Reset bài thi cũ
+    exam = null;
+    examId = null;
+    expiresAt = null;
+    clearInterval(timerTick);
+  }
   
   console.log('Bắt đầu thi với hạng:', hang);
 
@@ -186,7 +397,7 @@ async function startExam() {
   if (revTbl)  revTbl.innerHTML = '';
 
   const payload = { hang };
-  if (selDe && selDe.value) payload.de = selDe.value;
+  payload.de = (selDe && selDe.value) ? selDe.value : selectedDe;
   const res = await postJSON('/api/thi/tao-de', payload);
 
   if (!res.ok) {
@@ -223,6 +434,9 @@ async function startExam() {
   renderGrid();
   renderQuestion();
   startTimer();
+  
+  // Disable các control khi đang thi
+  disableControls();
 }
 // lắng nghe cả 2 nút (nút mobile có thể không tồn tại)
 btnStart && btnStart.addEventListener('click', startExam);
@@ -231,7 +445,10 @@ btnStartM && btnStartM.addEventListener('click', startExam);
 // ====== Grid ======
 function renderGrid() {
   grid.innerHTML = '';
-  exam.questions.forEach((q, i) => {
+  const currentExam = (reviewMode && reviewExam) ? reviewExam : exam;
+  if (!currentExam || !currentExam.questions) return;
+  
+  currentExam.questions.forEach((q, i) => {
     const item  = document.createElement('div');
     item.className = 'g-item' + (q.is_liet ? ' liet' : '');
     item.dataset.index = String(i);
@@ -246,7 +463,29 @@ function renderGrid() {
     no.addEventListener('click', () => { currentIndex = i; renderQuestion(); setActiveNum(); });
     item.appendChild(no);
 
-    // Bỏ cụm ô chọn nhỏ; lựa chọn sẽ thực hiện bằng nút ở giữa màn hình
+    // Cụm ô nhỏ 1..N theo số đáp án
+    const opts = document.createElement('div');
+    opts.className = 'g-opts';
+    (q.answers || []).forEach((a, idx) => {
+      const o = document.createElement('div');
+      o.className = 'g-opt';
+      o.textContent = String(idx + 1);
+      o.title = 'Chọn đáp án ' + (idx + 1);
+      o.dataset.qid = String(q.id);
+      o.dataset.aid = String(a.id);
+      if (selections[q.id] === a.id) o.classList.add('selected');
+
+      if (!reviewMode) {
+        o.addEventListener('click', (ev) => {
+          ev.stopPropagation();                 // không kích hoạt click số câu
+          selections[q.id] = a.id;              // chọn đáp án
+          renderQuestion();                     // vẽ lại vùng bên phải
+          renderGrid();                         // vẽ lại lưới để cập nhật ô nhỏ
+        });
+      }
+      opts.appendChild(o);
+    });
+    item.appendChild(opts);
 
     grid.appendChild(item);
   });
@@ -259,10 +498,13 @@ function renderGrid() {
 
 function setActiveNum() {
   const items = [...grid.querySelectorAll('.g-item')];
+  const currentExam = (reviewMode && reviewExam) ? reviewExam : exam;
+  if (!currentExam || !currentExam.questions) return;
+  
   items.forEach((it, i) => {
     it.classList.toggle('active', i === currentIndex);
 
-    const qid = exam.questions[i].id;
+    const qid = currentExam.questions[i].id;
     const noBtn = it.querySelector('.g-no');
     if (noBtn) noBtn.classList.toggle('answered', !!selections[qid]);
 
@@ -275,7 +517,11 @@ function setActiveNum() {
 
 // ====== Render Question ======
 function renderQuestion() {
-  const q = exam.questions[currentIndex];
+  // Sử dụng reviewExam nếu đang ở chế độ review và exam đã bị reset
+  const currentExam = (reviewMode && reviewExam) ? reviewExam : exam;
+  if (!currentExam || !currentExam.questions) return;
+  
+  const q = currentExam.questions[currentIndex];
   idxEl.textContent = currentIndex + 1;
 
   // Text
@@ -332,8 +578,11 @@ function renderQuestion() {
     answersEl.appendChild(el);
   });
 
+  // currentExam đã được khai báo ở đầu hàm, không cần khai báo lại
+  const totalQuestions = currentExam ? currentExam.questions.length : 0;
+  
   btnPrev && (btnPrev.disabled = (currentIndex === 0));
-  btnNext && (btnNext.disabled = (currentIndex >= exam.questions.length - 1));
+  btnNext && (btnNext.disabled = (currentIndex >= totalQuestions - 1));
   setActiveNum();
 }
 
@@ -342,7 +591,11 @@ btnPrev?.addEventListener('click', () => {
   if (currentIndex > 0) { currentIndex--; renderQuestion(); }
 });
 btnNext?.addEventListener('click', () => {
-  if (currentIndex < exam.questions.length - 1) { currentIndex++; renderQuestion(); }
+  const currentExam = (reviewMode && reviewExam) ? reviewExam : exam;
+  if (currentExam && currentIndex < currentExam.questions.length - 1) { 
+    currentIndex++; 
+    renderQuestion(); 
+  }
 });
 
 // ====== Keyboard: 1..4 & arrows ======
@@ -361,9 +614,11 @@ document.addEventListener('keydown', (e) => {
 
 // ====== Review helpers: đánh dấu grid sau khi nộp ======
 function markGridAfterSubmit() {
-  if (!exam) return;
+  const currentExam = (reviewMode && reviewExam) ? reviewExam : exam;
+  if (!currentExam || !currentExam.questions) return;
+  
   [...grid.children].forEach((el, i) => {
-    const q = exam.questions[i];
+    const q = currentExam.questions[i];
     const chosen = userMap[q.id] ?? selections[q.id]; // ưu tiên server
     const isWrong = wrongIds.includes(q.id);
     el.classList.remove('ok','wrong','unanswered','liet-wrong');
@@ -380,7 +635,9 @@ function markGridAfterSubmit() {
 
 // ====== Bảng xem lại: hiển thị đáp án đúng & đã chọn ======
 function getMaxAnswers() {
-  return exam.questions.reduce((m, q) => Math.max(m, (q.answers||[]).length), 0);
+  const currentExam = (reviewMode && reviewExam) ? reviewExam : exam;
+  if (!currentExam || !currentExam.questions) return 0;
+  return currentExam.questions.reduce((m, q) => Math.max(m, (q.answers||[]).length), 0);
 }
 
 function renderReviewMatrix() {
@@ -388,8 +645,11 @@ function renderReviewMatrix() {
   const tbl  = document.getElementById('revTbl');
   if (!wrap || !tbl) return;
 
+  const currentExam = (reviewMode && reviewExam) ? reviewExam : exam;
+  if (!currentExam || !currentExam.questions) return;
+
   // Tính số cột tối đa theo số phương án của câu dài nhất
-  const maxA = exam.questions.reduce((m, q) => Math.max(m, (q.answers||[]).length), 0);
+  const maxA = currentExam.questions.reduce((m, q) => Math.max(m, (q.answers||[]).length), 0);
 
   // Header
   let thead = '<thead><tr><th style="text-align:left">Câu hỏi</th>';
@@ -398,7 +658,7 @@ function renderReviewMatrix() {
 
   // Body: CHỈ đánh dấu đáp án đúng; KHÔNG hiển thị đáp án đã chọn
   let tbody = '<tbody>';
-  exam.questions.forEach((q, i) => {
+  currentExam.questions.forEach((q, i) => {
     const correctAids = Array.isArray(correctMap[q.id]) ? correctMap[q.id] : [];
     const chosenAid   = userMap[q.id] ?? selections[q.id] ?? null; // chỉ để ghi chú
     const isWrong     = wrongIds.includes(q.id);
@@ -432,7 +692,14 @@ function renderReviewMatrix() {
   tbl.querySelectorAll('tbody tr').forEach(tr => {
     tr.addEventListener('click', () => {
       const idx = Number(tr.dataset.idx || 0);
-      currentIndex = idx; renderQuestion(); setActiveNum();
+      currentIndex = idx;
+      
+      // Hiện panel exam để xem lại câu hỏi
+      panelExam.style.display = '';
+      panelResult.style.display = '';
+      
+      renderQuestion(); 
+      setActiveNum();
       const anchor = document.querySelector('#panelExam');
       if (anchor) window.scrollTo({ top: anchor.offsetTop - 20, behavior:'smooth' });
     });
@@ -449,8 +716,10 @@ function enterReviewMode(serverResult) {
   correctMap = serverResult.correct_map || {};
   userMap    = serverResult.user_map    || selections || {};
 
-  // giữ màn hình làm bài để xem lại
-  panelExam.style.display = '';
+  // Lưu exam data để xem lại
+  reviewExam = exam;
+
+  // Không hiện panel exam ở đây - sẽ được điều khiển bởi doSubmit
   btnSubmit.disabled = true;
   btnStart && (btnStart.disabled  = true);
   btnStartM && (btnStartM.disabled = true);
@@ -462,11 +731,14 @@ function enterReviewMode(serverResult) {
   renderReviewMatrix();
 
   // Nhảy tới câu sai đầu tiên nếu có
-  const firstWrongIdx = exam.questions.findIndex(q => wrongIds.includes(q.id));
-  if (firstWrongIdx >= 0) {
-    currentIndex = firstWrongIdx;
-    renderQuestion();
-    setActiveNum();
+  const currentExam = (reviewMode && reviewExam) ? reviewExam : exam;
+  if (currentExam && currentExam.questions) {
+    const firstWrongIdx = currentExam.questions.findIndex(q => wrongIds.includes(q.id));
+    if (firstWrongIdx >= 0) {
+      currentIndex = firstWrongIdx;
+      renderQuestion();
+      setActiveNum();
+    }
   }
 }
 
@@ -518,7 +790,52 @@ async function doSubmit(auto=false){
   }
 
   // Bật chế độ xem lại (sẽ vẽ bảng + tô màu grid)
+  // Lưu ý: enterReviewMode sẽ lưu exam vào reviewExam
   enterReviewMode(data);
+  
+  // Ẩn panel exam, hiện cả panel result và welcome
+  // Panel result để xem kết quả, panel welcome để chọn đề mới
+  panelExam.style.display = 'none';
+  panelResult.style.display = '';
+  panelWelcome.style.display = ''; // Hiện lại panel welcome để chọn đề mới (có buttons đề)
+  
+  // Dừng timer
+  clearInterval(timerTick);
+  
+  // Reset exam state để có thể chọn đề mới
+  // exam data đã được lưu vào reviewExam trong enterReviewMode
+  exam = null;
+  examId = null;
+  expiresAt = null;
+  selections = {}; // Reset selections
+  currentIndex = 0;
+  
+  // Enable lại các control sau khi kết thúc (cho phép chọn hạng/đề mới)
+  // Phải enable sau khi reset exam để không bị chặn bởi logic kiểm tra exam
+  enableControls();
+  
+  // Đảm bảo select hạng có đầy đủ options
+  // Luôn populate lại select hạng sau khi kết thúc để đảm bảo có đầy đủ options
+  if (Object.keys(presetMap).length > 0) {
+    fillSelects();
+  } else {
+    // Nếu presetMap rỗng, load lại presets
+    loadPresets();
+  }
+  
+  // Đảm bảo select hạng và button đề hoạt động bình thường
+  // Cập nhật lại buttons đề dựa trên hạng hiện tại
+  updateDeButtons();
+  
+  // Đảm bảo select hạng hiển thị và có thể chọn được
+  if (selHang) {
+    selHang.style.display = '';
+    selHang.disabled = false;
+  }
+  if (selHangM) {
+    selHangM.style.display = '';
+    selHangM.disabled = false;
+  }
 }
 btnSubmit && btnSubmit.addEventListener('click', () => doSubmit(false));
 

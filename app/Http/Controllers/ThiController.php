@@ -23,14 +23,33 @@ class ThiController extends Controller
         $presets = $bangs->mapWithKeys(function ($b) {
             $soCau    = (int) ($b->socauhoi ?: 25);
             $thoiGian = max(10, (int) ceil($soCau * 1.2));
+            
+            // Kiểm tra số bộ đề có sẵn cho hạng này
+            $deAvailable = CauHoiBangLai::where('BangLaiId', $b->id)
+                ->distinct()
+                ->pluck('BoDe')
+                ->filter(function($de) {
+                    return is_numeric($de) && $de >= 1 && $de <= 5;
+                })
+                ->sort()
+                ->values()
+                ->toArray();
+            
+            // Luôn có đề ngẫu nhiên nếu có ít nhất 1 câu hỏi
+            $totalQuestions = CauHoiBangLai::where('BangLaiId', $b->id)->count();
+            $deOptions = $deAvailable; // [1, 2, 3, ...] nếu có
+            if ($totalQuestions > 0) {
+                $deOptions[] = 'RANDOM';
+            }
+            
             return [
                 strtoupper(trim($b->ten)) => [
                     'so_cau'       => $soCau,
                     'thoi_gian'    => $thoiGian,
                     'dau_tu'       => (int) ($b->mincauhoidung ?: floor($soCau * 0.8)),
                     'min_cau_liet' => 0,
-                    // 5 bộ đề mẫu + 1 đề ngẫu nhiên
-                    'de_options'   => [1,2,3,4,5,'RANDOM'],
+                    'de_options'   => $deOptions, // Chỉ trả về các bộ đề có sẵn
+                    'total_questions' => $totalQuestions, // Tổng số câu hỏi của hạng
                 ],
             ];
         });
@@ -100,13 +119,17 @@ class ThiController extends Controller
         $all = $query->get(['id', 'stt', 'noidung', 'cauliet']);
 
         if ($all->count() === 0) {
-            return response()->json(['message' => 'Không có câu hỏi khả dụng'], 404);
+            $message = is_numeric($de) 
+                ? "Hạng {$hang} chưa có bộ đề {$de}. Vui lòng chọn bộ đề khác hoặc đề ngẫu nhiên."
+                : "Hạng {$hang} chưa có câu hỏi. Vui lòng kiểm tra lại dữ liệu.";
+            return response()->json(['message' => $message], 404);
         }
 
         // Tạo đề:
         // - Nếu de là RANDOM (hoặc null) ⇒ chọn ngẫu nhiên nhưng đảm bảo có ít nhất 1 câu liệt.
-        // - Nếu de là 1..5 ⇒ theo bộ cố định (danh sách câu đã xác định), vẫn giữ nguyên số lượng theo preset.
+        // - Nếu de là 1..5 ⇒ theo bộ cố định, nếu không đủ thì lấy tất cả có trong bộ đề đó.
         if (!is_numeric($de)) {
+            // Đề ngẫu nhiên: đảm bảo có ít nhất 1 câu liệt
             $liet = $all->where('cauliet', 1);
             if ($liet->count() > 0) {
                 $oneLiet = $liet->random(1);
@@ -117,10 +140,23 @@ class ThiController extends Controller
                 $chon = $all->shuffle()->take($soCau);
             }
         } else {
-            $chon = $all->shuffle()->take($soCau);
+            // Bộ đề cố định: lấy ngẫu nhiên từ bộ đề đó, nhưng không quá số câu có
+            $chon = $all->shuffle()->take(min($soCau, $all->count()));
         }
+        
+        // Nếu không đủ câu, điều chỉnh số câu xuống số lượng thực tế có
         if ($chon->count() < $soCau) {
-            return response()->json(['message' => 'Không đủ câu hỏi để lập đề'], 500);
+            // Nếu chọn bộ đề cố định mà không đủ câu
+            if (is_numeric($de)) {
+                $soCau = $chon->count();
+                $thoiGian = max(10, (int) ceil($soCau * 1.2));
+                $dauTu = (int) floor($soCau * 0.8);
+            } else {
+                // Nếu đề ngẫu nhiên mà không đủ → báo lỗi rõ ràng
+                return response()->json([
+                    'message' => "Không đủ câu hỏi để tạo đề. Hạng {$hang} chỉ có {$all->count()} câu hỏi, yêu cầu {$soCau} câu."
+                ], 500);
+            }
         }
 
         $payloadQuestions = [];

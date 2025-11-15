@@ -26,11 +26,6 @@
         <button id="btnStart" type="button" class="btn btn-start">Bắt đầu</button>
       </div>
 
-      <div class="hang-row" style="margin-top:8px">
-        <label for="selDe">Đề</label>
-        <select id="selDe"></select>
-      </div>
-
       <div class="subtime">Thời gian: <b id="tg">--</b> phút</div>
 
       <div id="grid" class="pad"></div>
@@ -43,8 +38,10 @@
     <main class="right card">
       {{-- Welcome --}}
       <div id="panelWelcome">
-        <h3>Chọn hạng rồi nhấn Bắt đầu</h3>
+        <h3>Chọn hạng và đề thi</h3>
         <p class="muted">Sai <b>câu liệt</b> sẽ <b>rớt</b> dù đủ điểm.</p>
+        <div id="deGroup" class="de-group"></div>
+        <select id="selDe" style="display:none"></select>
       </div>
 
       {{-- Exam --}}

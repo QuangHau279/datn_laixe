@@ -1,71 +1,143 @@
 // ===== Stats: random -> count-up -> stop (clean & forced) =====
-(() => {
-  const section  = document.getElementById('stats');
-  const items    = Array.from(document.querySelectorAll('.js-stat'));
-  const FORCE    = false; // production default: respect user motion preference
-  console.log('[stats] items:', items.length);
-  if (!items.length) return;
-
-  const prefersReduce = !FORCE && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const format = (n, el) => {
+(function() {
+  'use strict';
+  
+  let hasAnimated = false;
+  
+  function formatNumber(n, el) {
     const pad = el.dataset.pad;
     const suffix = el.dataset.suffix || '';
     let s = String(Math.round(n));
     if (pad) s = s.padStart(parseInt(pad, 10), '0');
     return s + suffix;
-  };
+  }
 
-  function animate(el) {
+  function animateStat(el) {
     if (el.dataset.done === '1') return;
     el.dataset.done = '1';
 
     const target = parseFloat(el.dataset.target || '0');
-    if (prefersReduce) { el.textContent = format(target, el); return; }
+    const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    
+    if (prefersReduce) { 
+      el.textContent = formatNumber(target, el); 
+      return; 
+    }
 
-    // 1) Scramble nhanh
-    const SCR_MS = 600, STEP = 30, MAX = Math.max(1, Math.floor(target * 1.3));
-    const scr = setInterval(() => { el.textContent = format(Math.floor(Math.random() * MAX), el); }, STEP);
+    // 1) Scramble nhanh (random số) - 600ms
+    const SCR_MS = 600;
+    const STEP = 30;
+    const MAX = Math.max(1, Math.floor(target * 1.3));
+    
+    const scr = setInterval(() => { 
+      el.textContent = formatNumber(Math.floor(Math.random() * MAX), el); 
+    }, STEP);
 
-    // 2) Đếm mượt tới đúng số
+    // 2) Đếm mượt tới đúng số - 900ms
     setTimeout(() => {
       clearInterval(scr);
-      const DUR = 900, t0 = performance.now();
+      const DUR = 900;
+      const t0 = performance.now();
       const ease = t => 1 - Math.pow(1 - t, 3);
-      (function tick(now){
+      
+      function tick(now) {
         const p = Math.min(1, (now - t0) / DUR);
-        el.textContent = format(target * ease(p), el);
-        if (p < 1) requestAnimationFrame(tick);
-      })(t0);
+        el.textContent = formatNumber(target * ease(p), el);
+        if (p < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          el.textContent = formatNumber(target, el);
+        }
+      }
+      tick(t0);
     }, SCR_MS);
   }
 
-  const start = () => { console.log('[stats] start'); items.forEach(animate); };
-
-  // Kích hoạt: IO nếu có, fallback scroll, và đảm bảo tự chạy sau 1.2s
-  const inView = () => {
-    if (!section) return true;
-    const r = section.getBoundingClientRect();
-    return r.top < window.innerHeight * 0.7 && r.bottom > 0;
-  };
-
-  if ('IntersectionObserver' in window && section) {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) { start(); io.disconnect(); } });
-    }, { threshold: 0.25 });
-    io.observe(section);
-  } else {
-    if (inView()) start();
-    else {
-      const onScroll = () => { if (inView()) { start(); window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); } };
-      window.addEventListener('scroll', onScroll, { passive:true });
-      window.addEventListener('resize', onScroll);
-      setTimeout(start, 1200);
-    }
+  function startAnimation() {
+    if (hasAnimated) return;
+    hasAnimated = true;
+    
+    const items = document.querySelectorAll('.js-stat');
+    items.forEach(animateStat);
   }
 
-  // Dev helper: chạy lại bằng console
-  window.__runStats = () => items.forEach(el => { el.dataset.done=''; animate(el); });
+  function initStats() {
+    const section = document.getElementById('stats');
+    if (!section) {
+      console.warn('[stats] Section #stats not found');
+      return;
+    }
+    
+    const items = document.querySelectorAll('.js-stat');
+    if (items.length === 0) {
+      console.warn('[stats] No .js-stat elements found');
+      return;
+    }
+    
+    console.log('[stats] Found', items.length, 'stat elements');
+
+    // Kiểm tra xem section có trong view không
+    function checkInView() {
+      const rect = section.getBoundingClientRect();
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      return rect.top < viewportHeight && rect.bottom > 0;
+    }
+
+    // Sử dụng IntersectionObserver nếu có
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            console.log('[stats] Section in view, starting animation');
+            startAnimation();
+            observer.disconnect();
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '0px'
+      });
+      
+      observer.observe(section);
+      console.log('[stats] IntersectionObserver initialized');
+    } else {
+      // Fallback: dùng scroll event
+      let triggered = false;
+      function handleScroll() {
+        if (!triggered && checkInView()) {
+          triggered = true;
+          console.log('[stats] Scrolled to section, starting animation');
+          startAnimation();
+          window.removeEventListener('scroll', handleScroll);
+          window.removeEventListener('resize', handleScroll);
+        }
+      }
+      
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      window.addEventListener('resize', handleScroll);
+      
+      // Kiểm tra ngay nếu đã trong view
+      if (checkInView()) {
+        setTimeout(handleScroll, 100);
+      }
+    }
+
+    // Helper function để test
+    window.__runStats = function() {
+      hasAnimated = false;
+      document.querySelectorAll('.js-stat').forEach(el => {
+        el.dataset.done = '';
+      });
+      startAnimation();
+    };
+  }
+
+  // Khởi tạo khi DOM sẵn sàng
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initStats);
+  } else {
+    setTimeout(initStats, 100);
+  }
 })();
 
 /* ===== Off-canvas menu: safe init ===== */
@@ -250,6 +322,22 @@
 
         console.log('[Chatbox] Response status:', response.status, response.statusText);
 
+        // Xử lý lỗi 429 (quá giới hạn) trước khi parse JSON
+        if (response.status === 429) {
+          try {
+            const errorData = await response.json();
+            const errorMsg = errorData?.message || 'Đã đạt giới hạn số câu hỏi';
+            const suggestion = errorData?.suggestion || '';
+            addMessage(`⚠️ ${errorMsg}\n\n${suggestion}`, 'ai');
+            return;
+          } catch (e) {
+            // Nếu không parse được JSON, dùng text
+            const errorText = await response.text();
+            addMessage(`⚠️ Đã đạt giới hạn số câu hỏi. ${errorText}`, 'ai');
+            return;
+          }
+        }
+        
         if (!response.ok) {
           const errorText = await response.text();
           console.error('[Chatbox] Server error:', response.status, errorText);
@@ -260,8 +348,20 @@
         console.log('[Chatbox] Response data:', data);
         
         const answer = data?.answer || 'Xin lỗi, tôi không hiểu câu hỏi này.';
+        
+        // Hiển thị số câu còn lại nếu có
+        let displayAnswer = answer;
+        if (data?.remaining !== undefined && data?.limit !== undefined) {
+          const remaining = data.remaining;
+          const limit = data.limit;
+          if (remaining <= 3 && remaining > 0) {
+            displayAnswer += `\n\n⚠️ Bạn còn ${remaining}/${limit} câu hỏi trong session này.`;
+          } else if (remaining === 0) {
+            displayAnswer += `\n\n⚠️ Bạn đã sử dụng hết ${limit} câu hỏi trong session này.`;
+          }
+        }
 
-        addMessage(answer, 'ai');
+        addMessage(displayAnswer, 'ai');
       } catch (error) {
         removeTypingIndicator(typingId);
         console.error('[Chatbox] Error details:', error);
@@ -340,5 +440,129 @@
     document.addEventListener('DOMContentLoaded', initChatbox);
   } else {
     initChatbox();
+  }
+})();
+
+// ===== Toast Notification =====
+function showToast(message, type = 'success') {
+  // Remove existing toast
+  const existingToast = document.querySelector('.toast');
+  if (existingToast) {
+    existingToast.remove();
+  }
+  
+  // Create toast element
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  
+  const icon = type === 'success' ? '✅' : '❌';
+  toast.innerHTML = `
+    <span class="toast-icon">${icon}</span>
+    <span class="toast-message">${message}</span>
+    <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Auto remove after 5 seconds
+  setTimeout(() => {
+    if (toast.parentElement) {
+      toast.style.animation = 'toastSlideIn 0.3s ease reverse';
+      setTimeout(() => toast.remove(), 300);
+    }
+  }, 5000);
+}
+
+// ===== Lead Form Submission =====
+(function() {
+  'use strict';
+  
+  function initLeadForm() {
+    const form = document.getElementById('leadForm');
+    const btnSubmit = document.getElementById('btnSubmit');
+    
+    if (!form || !btnSubmit) {
+      console.warn('[Lead Form] Form or button not found');
+      return;
+    }
+    
+    console.log('[Lead Form] Initialized');
+    
+    const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]')?.content;
+    
+    if (!CSRF_TOKEN) {
+      console.error('[Lead Form] CSRF token not found');
+    }
+    
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      console.log('[Lead Form] Form submitted');
+      
+      // Disable button
+      btnSubmit.disabled = true;
+      const originalText = btnSubmit.textContent;
+      btnSubmit.textContent = 'Đang xử lý...';
+      
+      // Get form data
+      const formData = new FormData(form);
+      const data = {
+        name: formData.get('name')?.trim(),
+        phone: formData.get('phone')?.trim(),
+        license: formData.get('license') || null,
+      };
+      
+      console.log('[Lead Form] Submitting data:', data);
+      
+      // Validate
+      if (!data.name || !data.phone) {
+        showToast('Vui lòng điền đầy đủ thông tin!', 'error');
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = originalText;
+        return;
+      }
+      
+      try {
+        const response = await fetch('/api/leads', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': CSRF_TOKEN,
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          body: JSON.stringify(data),
+        });
+        
+        console.log('[Lead Form] Response status:', response.status);
+        
+        const result = await response.json();
+        console.log('[Lead Form] Response data:', result);
+        
+        if (result.success) {
+          // Success: show toast and reset form
+          showToast(result.message || 'Đăng ký thành công! Chúng tôi sẽ liên hệ với bạn sớm nhất.', 'success');
+          form.reset();
+        } else {
+          // Error: show error message
+          const errorMsg = result.message || result.errors ? Object.values(result.errors || {}).flat().join(', ') : 'Có lỗi xảy ra. Vui lòng thử lại.';
+          showToast(errorMsg, 'error');
+        }
+      } catch (error) {
+        console.error('[Lead Form] Error:', error);
+        showToast('Có lỗi kết nối. Vui lòng thử lại sau.', 'error');
+      } finally {
+        // Re-enable button
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = originalText;
+      }
+    });
+  }
+  
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLeadForm);
+  } else {
+    initLeadForm();
   }
 })();

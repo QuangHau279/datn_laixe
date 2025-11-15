@@ -23,12 +23,12 @@
   {{-- CÁC KHÓA HỌC --}}
 <h2 class="section-title">Các Khóa Học</h2>
 <section class="courses" aria-label="Danh sách khóa học">
-  {{-- Ôn thi Lý thuyết --}}
+  {{-- Ôn thi Lý thuyết  --}}
   <a class="course reveal" href="{{ route('practice.cauhoi') }}">
     <div class="thumb img-holder ratio-1x1"
          style="background-image:url('{{ asset('images/icons/icons8-car-100.png') }}')">
     </div>
-    <div><h4>Ôn Thi Lý Thuyết</h4><p>600 câu</p></div>
+    <div><h4>Ôn Thi Lý Thuyết GPLX</h4><p>600 câu</p></div>
   </a>
 
   {{-- Ôn thi Mô phỏng --}}
@@ -54,7 +54,7 @@
          style="background-image:url('{{ asset('images/icons/icons8-motorbike-100-2.png') }}')">
      
     </div>
-    <div><h4>Xe Máy</h4><p>250 câu</p></div>
+    <div><h4>Ôn Tập Xe Máy</h4><p>250 câu</p></div>
   </a>
 
   {{-- Thi thử trực tuyến --}}
@@ -63,7 +63,7 @@
          style="background-image:url('{{ asset('images/icons/license.png') }}')">
       
     </div>
-    <div><h4>Kiểm Tra Trực Tuyến</h4><p>20 bộ đề</p></div>
+    <div><h4>Kiểm Tra Trực Tuyến</h4><p>5 bộ đề</p></div>
   </a>
 
   {{-- Các biển báo --}}

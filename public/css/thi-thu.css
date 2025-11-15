@@ -48,6 +48,16 @@ body{
 .right{padding:14px}
 .note{margin-top:6px; color:var(--muted); font-size:13px}
 
+/* Đề buttons */
+.de-group{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:16px 0}
+.de-btn{
+  height:40px; padding:0 16px; border-radius:8px; border:1px solid #cfd6e6;
+  background:#fff; cursor:pointer; font-weight:600; color:#0b3d91;
+  font-size:15px; transition:all 0.2s;
+}
+.de-btn:hover{background:#f0f7ff; border-color:#8ec1ff; transform:translateY(-1px)}
+.de-btn.active{background:#e9f2ff; border-color:var(--blue); box-shadow:0 2px 6px rgba(42,123,215,0.2)}
+
 /* LEFT – grid câu hỏi */
 .pad{
   display:flex; flex-direction:column; gap:8px; padding:10px;
@@ -107,17 +117,16 @@ body{
 /* Nội dung & đáp án */
 .qbody{display:flex; flex-direction:column; gap:12px}
 .qtext{font-weight:600}
-.answers{display:flex; flex-direction:column; gap:12px; align-items:center}
+.answers{display:flex; flex-direction:column; gap:10px}
 .ans{
-  display:flex; align-items:center; justify-content:center; gap:10px; padding:14px 16px; cursor:pointer;
-  border:1px solid var(--blue); border-radius:8px; background:var(--blue); color:var(--white);
-  max-width:760px; width:100%; font-weight:600;
+  display:flex; align-items:center; gap:10px; padding:10px 12px; cursor:pointer;
+  border:var(--b); border-radius:var(--r-md); background:var(--card);
 }
-.ans:hover{background:var(--blue-dark); border-color:var(--blue-dark)}
-.ans.selected{box-shadow:0 0 0 3px rgba(42,123,215,.25)}
+.ans:hover{box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.ans.selected{outline:2px solid var(--blue)}
 .ans-badge{
   min-width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;
-  border-radius:var(--r-round); border:1px solid rgba(255,255,255,.6); background:rgba(255,255,255,.15); font-weight:700; color:#fff;
+  border-radius:var(--r-round); border:1px solid #cfd6e6; background:#f7fafc; font-weight:700;
 }
 .ans.review-selected{outline:2px dashed #999}
 .ans.review-disabled{cursor:default; opacity:.85}

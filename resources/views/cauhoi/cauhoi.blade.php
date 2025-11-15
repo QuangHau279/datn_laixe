@@ -3,6 +3,49 @@
 
 @push('styles')
   <link rel="stylesheet" href="{{ asset('css/quiz-style.css') }}">
+  <style>
+    .search-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1000;
+      margin-top: 4px;
+    }
+    .search-result-item {
+      padding: 10px 15px;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.2s;
+    }
+    .search-result-item:hover {
+      background: #f5f5f5;
+    }
+    .search-result-item:last-child {
+      border-bottom: none;
+    }
+    .search-result-stt {
+      font-weight: bold;
+      color: #007bff;
+      margin-right: 8px;
+    }
+    .search-result-snippet {
+      color: #666;
+      font-size: 0.9em;
+      margin-top: 4px;
+    }
+    .search-no-results {
+      padding: 15px;
+      text-align: center;
+      color: #999;
+    }
+  </style>
 @endpush
 
 @section('content')
@@ -15,9 +58,10 @@
   <div class="quiz-layout quiz-wrapper">
     {{-- SIDEBAR --}}
     <aside class="quiz-sidebar">
-      <div class="sidebar-card">
+      <div class="sidebar-card" style="position: relative;">
         <label class="sidebar-label">Tìm kiếm</label>
-        <input id="qSearch" class="sidebar-input" placeholder="Nhập số câu... (1–600)">
+        <input id="qSearch" class="sidebar-input" placeholder="Số câu (1-600) hoặc từ khóa...">
+        <div id="search-results" class="search-results" style="display: none;"></div>
       </div>
 
       <div class="question-grid">
@@ -62,17 +106,7 @@
     };
     window.QUESTION_API = window.QUIZ_CONFIG.apiBase;
 
-    // Tìm số câu và nhảy tới khi Enter
-    (function(){
-      const base = "{{ url('/on-tap/cau-hoi') }}";
-      const ip = document.getElementById('qSearch');
-      ip?.addEventListener('keydown', function(e){
-        if (e.key === 'Enter') {
-          const n = parseInt(ip.value, 10);
-          if (n >= 1 && n <= 600) window.location = base + '/' + n;
-        }
-      });
-    })();
+    // Tìm kiếm sẽ được xử lý trong quiz-logic.js
   </script>
   <script src="{{ asset('js/quiz-logic.js') }}" defer></script>
 @endpush

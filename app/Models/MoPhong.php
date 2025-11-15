@@ -11,6 +11,10 @@ class MoPhong extends Model
 
     protected $fillable = [
         'stt',
+        'ma_so',
+        'chuong',
+        'tieu_de',
+        'mo_ta_ngan',
         'video',
         'diem5',
         'diem4',
@@ -18,16 +22,21 @@ class MoPhong extends Model
         'diem2',
         'diem1',
         'diem1end',
-        'active'
+        'diem_toi_da',
+        'url_tham_khao',
+        'active',
     ];
 
     protected $casts = [
-        'diem5' => 'integer',
-        'diem4' => 'integer',
-        'diem3' => 'integer',
-        'diem2' => 'integer',
-        'diem1' => 'integer',
-        'diem1end' => 'integer',
+        'stt' => 'integer',
+        'chuong' => 'integer',
+        'diem5' => 'decimal:3',  // DECIMAL(6,3) trong database
+        'diem4' => 'decimal:3',
+        'diem3' => 'decimal:3',
+        'diem2' => 'decimal:3',
+        'diem1' => 'decimal:3',
+        'diem1end' => 'decimal:3',
+        'diem_toi_da' => 'integer',
         'active' => 'boolean',
     ];
 }

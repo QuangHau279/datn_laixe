@@ -139,4 +139,142 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   // khởi tạo
   show(0);
+
+  // ========= TÌM KIẾM =========
+  const searchInput = document.getElementById('qSearch');
+  const searchResults = document.getElementById('search-results');
+  let searchTimeout = null;
+
+  async function performSearch(query) {
+    if (!query || query.trim() === '') {
+      if (searchResults) searchResults.style.display = 'none';
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      const items = data.items || [];
+
+      if (!searchResults) return;
+
+      if (items.length === 0) {
+        searchResults.innerHTML = '<div class="search-no-results">Không tìm thấy kết quả</div>';
+        searchResults.style.display = 'block';
+        return;
+      }
+
+      // Render kết quả
+      searchResults.innerHTML = items.map(item => `
+        <div class="search-result-item" data-stt="${item.stt}">
+          <div>
+            <span class="search-result-stt">Câu ${item.stt}</span>
+          </div>
+          <div class="search-result-snippet">${item.snippet || ''}</div>
+        </div>
+      `).join('');
+
+      // Xử lý click vào kết quả
+      searchResults.querySelectorAll('.search-result-item').forEach(item => {
+        item.addEventListener('click', function() {
+          const stt = parseInt(this.dataset.stt, 10);
+          const foundIdx = grid.findIndex(g => g == stt);
+          if (foundIdx >= 0) {
+            show(foundIdx);
+            if (searchInput) searchInput.value = '';
+            searchResults.style.display = 'none';
+            // Scroll đến câu trong grid
+            const gridItem = gridEl.querySelector(`[data-i="${foundIdx}"]`);
+            if (gridItem) {
+              gridItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }
+        });
+      });
+
+      searchResults.style.display = 'block';
+    } catch (e) {
+      console.error('Search error:', e);
+      if (searchResults) {
+        searchResults.innerHTML = '<div class="search-no-results">Lỗi tìm kiếm</div>';
+        searchResults.style.display = 'block';
+      }
+    }
+  }
+
+  // Tìm kiếm khi gõ (debounce)
+  if (searchInput) {
+    searchInput.addEventListener('input', function(e) {
+      const query = e.target.value.trim();
+      
+      clearTimeout(searchTimeout);
+      
+      if (query.length === 0) {
+        if (searchResults) searchResults.style.display = 'none';
+        return;
+      }
+
+      // Nếu là số thuần túy và hợp lệ, tìm ngay
+      if (/^\d+$/.test(query)) {
+        const num = parseInt(query, 10);
+        if (num >= 1 && num <= 600) {
+          const foundIdx = grid.findIndex(g => g == num);
+          if (foundIdx >= 0) {
+            show(foundIdx);
+            if (searchResults) searchResults.style.display = 'none';
+            const gridItem = gridEl.querySelector(`[data-i="${foundIdx}"]`);
+            if (gridItem) {
+              gridItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return;
+          }
+        }
+      }
+
+      // Debounce cho tìm kiếm từ khóa
+      searchTimeout = setTimeout(() => {
+        performSearch(query);
+      }, 300);
+    });
+
+    // Xử lý Enter
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const query = this.value.trim();
+        
+        if (/^\d+$/.test(query)) {
+          const num = parseInt(query, 10);
+          if (num >= 1 && num <= 600) {
+            const foundIdx = grid.findIndex(g => g == num);
+            if (foundIdx >= 0) {
+              show(foundIdx);
+              if (searchResults) searchResults.style.display = 'none';
+              const gridItem = gridEl.querySelector(`[data-i="${foundIdx}"]`);
+              if (gridItem) {
+                gridItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }
+          }
+        } else if (query.length > 0 && searchResults) {
+          // Nếu có kết quả, chọn kết quả đầu tiên
+          const firstResult = searchResults.querySelector('.search-result-item');
+          if (firstResult) {
+            firstResult.click();
+          }
+        }
+      } else if (e.key === 'Escape') {
+        if (searchResults) searchResults.style.display = 'none';
+        this.blur();
+      }
+    });
+
+    // Ẩn kết quả khi click ra ngoài
+    document.addEventListener('click', function(e) {
+      if (searchInput && searchResults && 
+          !searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+        searchResults.style.display = 'none';
+      }
+    });
+  }
 });

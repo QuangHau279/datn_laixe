@@ -13,20 +13,30 @@ class SimulationController extends Controller
     public function index(Request $request)
     {
         $videoId = $request->query('v', null);
+        $mode = $request->query('mode', 'practice'); // 'practice' hoặc 'test'
         
-        // Lấy danh sách tất cả video mô phỏng
-        $videos = MoPhong::where('active', true)
-            ->orderBy('stt')
-            ->get();
+        // Lấy danh sách video mô phỏng
+        if ($mode === 'test') {
+            // Thi thử: Lấy ngẫu nhiên 10 video
+            $videos = MoPhong::where('active', true)
+                ->inRandomOrder()
+                ->limit(10)
+                ->get();
+        } else {
+            // Ôn tập: Lấy tất cả video theo thứ tự
+            $videos = MoPhong::where('active', true)
+                ->orderBy('stt')
+                ->get();
+        }
 
         // Chọn video chính: theo ?v=... hoặc video đầu tiên
         $mainVideo = null;
         if ($videoId) {
-            $mainVideo = MoPhong::where('id', $videoId)
-                ->where('active', true)
-                ->first();
+            // Kiểm tra xem video có trong danh sách hiện tại không
+            $mainVideo = $videos->firstWhere('id', $videoId);
         }
         
+        // Nếu không tìm thấy video trong danh sách, chọn video đầu tiên
         if (!$mainVideo && $videos->count() > 0) {
             $mainVideo = $videos->first();
         }
@@ -40,6 +50,7 @@ class SimulationController extends Controller
             'mainVideo' => $mainVideo,
             'otherVideos' => $otherVideos,
             'allVideos' => $videos,
+            'mode' => $mode,
         ]);
     }
 
@@ -50,23 +61,23 @@ class SimulationController extends Controller
     {
         $request->validate([
             'video_id' => 'required|exists:tblmophong,id',
-            'diem5' => 'required|integer|min:0',
-            'diem4' => 'required|integer|min:0',
-            'diem3' => 'required|integer|min:0',
-            'diem2' => 'required|integer|min:0',
-            'diem1' => 'required|integer|min:0',
-            'diem1end' => 'required|integer|min:0',
+            'diem5' => 'nullable|numeric|min:0',
+            'diem4' => 'nullable|numeric|min:0',
+            'diem3' => 'nullable|numeric|min:0',
+            'diem2' => 'nullable|numeric|min:0',
+            'diem1' => 'nullable|numeric|min:0',
+            'diem1end' => 'nullable|numeric|min:0',
         ]);
 
         $video = MoPhong::findOrFail($request->video_id);
         
         $video->update([
-            'diem5' => $request->diem5,
-            'diem4' => $request->diem4,
-            'diem3' => $request->diem3,
-            'diem2' => $request->diem2,
-            'diem1' => $request->diem1,
-            'diem1end' => $request->diem1end,
+            'diem5' => $request->diem5 ?? 0.0,
+            'diem4' => $request->diem4 ?? 0.0,
+            'diem3' => $request->diem3 ?? 0.0,
+            'diem2' => $request->diem2 ?? 0.0,
+            'diem1' => $request->diem1 ?? 0.0,
+            'diem1end' => $request->diem1end ?? 0.0,
         ]);
 
         return response()->json([

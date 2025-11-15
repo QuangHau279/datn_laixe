@@ -1,0 +1,277 @@
+DANH SÁCH BIỂN BÁO CẦN THÊM HÌNH ẢNH
+==========================================
+
+BIỂN BÁO CẤM (P Series) - 50 biển báo
+--------------------------------------
+P.101 - Cấm đi ngược chiều
+P.102 - Cấm rẽ trái
+P.103 - Cấm rẽ phải
+P.104 - Cấm quay đầu
+P.105 - Cấm vượt
+P.106 - Cấm ô tô vượt
+P.107 - Cấm ô tô tải vượt
+P.108 - Cấm xe cơ giới
+P.109 - Cấm xe ô tô
+P.110 - Cấm xe ô tô và xe máy
+P.111 - Cấm xe máy
+P.112 - Cấm xe đạp
+P.113 - Cấm xe kéo rơ-moóc
+P.114 - Cấm xe kéo súc vật
+P.115 - Cấm xe thô sơ
+P.116 - Cấm xe công nông
+P.117 - Cấm xe kéo moóc
+P.118 - Cấm xe bánh xích
+P.119 - Cấm người đi bộ
+P.120 - Cấm xe đạp thồ
+P.121 - Cấm xe ba bánh loại có động cơ
+P.122 - Cấm xe ba bánh loại không có động cơ
+P.123 - Cấm xe kéo rơ-moóc và sơ-mi rơ-moóc
+P.124 - Cấm xe ô tô kéo rơ-moóc
+P.125 - Cấm xe có tải trọng trục vượt quá giá trị ghi trên biển
+P.126 - Cấm xe có chiều cao vượt quá giá trị ghi trên biển
+P.127 - Cấm xe có chiều rộng vượt quá giá trị ghi trên biển
+P.128 - Cấm xe có chiều dài vượt quá giá trị ghi trên biển
+P.129 - Cấm xe có tải trọng toàn bộ vượt quá giá trị ghi trên biển
+P.130 - Cấm dừng xe và đỗ xe
+P.131 - Cấm đỗ xe
+P.132 - Cấm đỗ xe theo giờ
+P.133 - Cấm rẽ trái và rẽ phải
+P.134 - Cấm đi thẳng
+P.135 - Cấm đi thẳng và rẽ trái
+P.136 - Cấm đi thẳng và rẽ phải
+P.137 - Cấm rẽ trái và quay đầu
+P.138 - Cấm rẽ phải và quay đầu
+P.139 - Cấm bóp còi
+P.140 - Cấm dừng xe, đỗ xe bên trái
+P.141 - Cấm dừng xe, đỗ xe bên phải
+P.142 - Cấm dừng xe, đỗ xe hai bên
+P.143 - Cấm xe có động cơ chạy bằng xăng
+P.144 - Cấm xe có động cơ chạy bằng dầu
+P.145 - Cấm xe chở hàng nguy hiểm
+P.146 - Cấm xe chở chất nổ
+P.147 - Cấm xe chở chất dễ cháy
+P.148 - Cấm xe chở chất độc
+P.149 - Cấm xe chở chất phóng xạ
+P.150 - Cấm xe chở hàng dài
+
+BIỂN BÁO NGUY HIỂM (W Series) - 50 biển báo
+--------------------------------------------
+W.201 - Chỗ ngoặt nguy hiểm vòng bên trái
+W.202 - Chỗ ngoặt nguy hiểm vòng bên phải
+W.203 - Đường bị hẹp
+W.204 - Đường bị hẹp về phía trái
+W.205 - Đường bị hẹp về phía phải
+W.206 - Đường hai chiều
+W.207 - Đường giao nhau
+W.208 - Giao nhau với đường không ưu tiên
+W.209 - Giao nhau với đường ưu tiên
+W.210 - Giao nhau có tín hiệu đèn
+W.211 - Giao nhau với đường sắt không rào chắn
+W.212 - Giao nhau với đường sắt có rào chắn
+W.213 - Cảnh báo có súc vật
+W.214 - Cảnh báo trẻ em
+W.215 - Cảnh báo người đi bộ cắt ngang
+W.216 - Cảnh báo xe đạp cắt ngang
+W.217 - Cảnh báo đường trơn
+W.218 - Cảnh báo lề đường nguy hiểm
+W.219 - Cảnh báo đường có sỏi đá
+W.220 - Cảnh báo đường có thể bị sạt lở
+W.221 - Cảnh báo gió ngang
+W.222 - Cảnh báo người đi bộ
+W.223 - Cảnh báo cầu vượt liên thông
+W.224 - Cảnh báo đường cao tốc phía trước
+W.225 - Cảnh báo đường hai chiều
+W.226 - Cảnh báo đường đôi
+W.227 - Cảnh báo đường đôi kết thúc
+W.228 - Cảnh báo đường dốc xuống nguy hiểm
+W.229 - Cảnh báo đường dốc lên nguy hiểm
+W.230 - Cảnh báo đường không bằng phẳng
+W.231 - Cảnh báo đường có gờ giảm tốc
+W.232 - Cảnh báo đường có ổ gà
+W.233 - Cảnh báo đường có vật cản
+W.234 - Cảnh báo đường có công trường
+W.235 - Cảnh báo đường có người làm việc
+W.236 - Cảnh báo đường có máy móc thi công
+W.237 - Cảnh báo đường có xe đẩy
+W.238 - Cảnh báo đường có xe kéo
+W.239 - Cảnh báo đường có xe ngựa
+W.240 - Cảnh báo đường có xe trâu bò
+W.241 - Cảnh báo đường có xe bò
+W.242 - Cảnh báo đường có xe ngựa kéo
+W.243 - Cảnh báo đường có xe trâu kéo
+W.244 - Cảnh báo đường có xe bò kéo
+W.245 - Cảnh báo đường có xe dê
+W.246 - Cảnh báo đường có xe lừa
+W.247 - Cảnh báo đường có xe la
+W.248 - Cảnh báo đường có xe voi
+W.249 - Cảnh báo đường có xe thồ
+W.250 - Cảnh báo đường có xe xích lô
+
+BIỂN BÁO HIỆU LỆNH (R Series) - 50 biển báo
+--------------------------------------------
+R.301 - Hướng đi phải theo
+R.302 - Hướng phải đi vòng sang phải
+R.303 - Hướng phải đi vòng sang trái
+R.304 - Hướng phải đi thẳng
+R.305 - Hướng phải đi thẳng và rẽ phải
+R.306 - Hướng phải đi thẳng và rẽ trái
+R.307 - Hướng phải đi rẽ phải
+R.308 - Hướng phải đi rẽ trái
+R.309 - Hướng phải đi rẽ phải hoặc rẽ trái
+R.310 - Hướng phải đi vòng sang phải hoặc sang trái
+R.311 - Đường dành cho xe cơ giới
+R.312 - Đường dành cho xe ô tô
+R.313 - Đường dành cho xe máy
+R.314 - Đường dành cho xe đạp
+R.315 - Đường dành cho người đi bộ
+R.316 - Tốc độ tối thiểu cho phép
+R.317 - Tốc độ tối đa cho phép
+R.318 - Hết hạn chế tốc độ tối đa
+R.319 - Hết hạn chế tốc độ tối thiểu
+R.320 - Hết tất cả các lệnh cấm
+R.321 - Hết hạn chế vượt
+R.322 - Hết hạn chế còi
+R.323 - Hết hạn chế dừng xe và đỗ xe
+R.324 - Hết hạn chế đỗ xe
+R.325 - Hết hạn chế rẽ trái
+R.326 - Hết hạn chế rẽ phải
+R.327 - Hết hạn chế quay đầu
+R.328 - Hết hạn chế đi ngược chiều
+R.329 - Hết hạn chế xe cơ giới
+R.330 - Hết hạn chế xe ô tô
+R.331 - Hết hạn chế xe máy
+R.332 - Hết hạn chế xe đạp
+R.333 - Hết hạn chế người đi bộ
+R.334 - Hết hạn chế xe kéo rơ-moóc
+R.335 - Hết hạn chế xe kéo súc vật
+R.336 - Hết hạn chế xe thô sơ
+R.337 - Hết hạn chế xe công nông
+R.338 - Hết hạn chế xe kéo moóc
+R.339 - Hết hạn chế xe bánh xích
+R.340 - Hết hạn chế xe đạp thồ
+R.341 - Hết hạn chế xe ba bánh loại có động cơ
+R.342 - Hết hạn chế xe ba bánh loại không có động cơ
+R.343 - Hết hạn chế xe kéo rơ-moóc và sơ-mi rơ-moóc
+R.344 - Hết hạn chế xe ô tô kéo rơ-moóc
+R.345 - Hết hạn chế tải trọng trục
+R.346 - Hết hạn chế chiều cao
+R.347 - Hết hạn chế chiều rộng
+R.348 - Hết hạn chế chiều dài
+R.349 - Hết hạn chế tải trọng toàn bộ
+R.350 - Hết hạn chế chất nổ
+
+BIỂN BÁO CHỈ DẪN (I Series) - 50 biển báo
+------------------------------------------
+I.401 - Bắt đầu đường ưu tiên
+I.402 - Hết đoạn đường ưu tiên
+I.403 - Giao nhau với đường ưu tiên
+I.404 - Giao nhau với đường không ưu tiên
+I.405 - Đường một chiều
+I.406 - Đường hai chiều
+I.407 - Đường đôi
+I.408 - Hết đường đôi
+I.409 - Đường có làn đường dành cho xe khách
+I.410 - Hết làn đường dành cho xe khách
+I.411 - Đường có làn đường dành cho xe tải
+I.412 - Hết làn đường dành cho xe tải
+I.413 - Đường có làn đường dành cho xe máy
+I.414 - Hết làn đường dành cho xe máy
+I.415 - Đường có làn đường dành cho xe đạp
+I.416 - Hết làn đường dành cho xe đạp
+I.417 - Đường có làn đường dành cho người đi bộ
+I.418 - Hết làn đường dành cho người đi bộ
+I.419 - Đường có làn đường dành cho xe buýt
+I.420 - Hết làn đường dành cho xe buýt
+I.421 - Đường có làn đường dành cho taxi
+I.422 - Hết làn đường dành cho taxi
+I.423 - Đường có làn đường dành cho xe cứu thương
+I.424 - Hết làn đường dành cho xe cứu thương
+I.425 - Đường có làn đường dành cho xe cứu hỏa
+I.426 - Hết làn đường dành cho xe cứu hỏa
+I.427 - Đường có làn đường dành cho xe cảnh sát
+I.428 - Hết làn đường dành cho xe cảnh sát
+I.429 - Đường có làn đường dành cho xe quân sự
+I.430 - Hết làn đường dành cho xe quân sự
+I.431 - Đường có làn đường dành cho xe ngoại giao
+I.432 - Hết làn đường dành cho xe ngoại giao
+I.433 - Đường có làn đường dành cho xe VIP
+I.434 - Hết làn đường dành cho xe VIP
+I.435 - Đường có làn đường dành cho xe tải nặng
+I.436 - Hết làn đường dành cho xe tải nặng
+I.437 - Đường có làn đường dành cho xe container
+I.438 - Hết làn đường dành cho xe container
+I.439 - Đường có làn đường dành cho xe rơ-moóc
+I.440 - Hết làn đường dành cho xe rơ-moóc
+I.441 - Đường có làn đường dành cho xe máy kéo
+I.442 - Hết làn đường dành cho xe máy kéo
+I.443 - Đường có làn đường dành cho xe nông nghiệp
+I.444 - Hết làn đường dành cho xe nông nghiệp
+I.445 - Đường có làn đường dành cho xe công trình
+I.446 - Hết làn đường dành cho xe công trình
+I.447 - Đường có làn đường dành cho xe vận tải
+I.448 - Hết làn đường dành cho xe vận tải
+I.449 - Đường có làn đường dành cho xe du lịch
+I.450 - Hết làn đường dành cho xe du lịch
+
+BIỂN BÁO PHỤ (S Series) - 50 biển báo
+--------------------------------------
+S.501 - Phụ cấm đi ngược chiều
+S.502 - Phụ cấm rẽ trái
+S.503 - Phụ cấm rẽ phải
+S.504 - Phụ cấm quay đầu
+S.505 - Phụ cấm vượt
+S.506 - Phụ cấm ô tô vượt
+S.507 - Phụ cấm ô tô tải vượt
+S.508 - Phụ cấm xe cơ giới
+S.509 - Phụ cấm xe ô tô
+S.510 - Phụ cấm xe ô tô và xe máy
+S.511 - Phụ cấm xe máy
+S.512 - Phụ cấm xe đạp
+S.513 - Phụ cấm xe kéo rơ-moóc
+S.514 - Phụ cấm xe kéo súc vật
+S.515 - Phụ cấm xe thô sơ
+S.516 - Phụ cấm xe công nông
+S.517 - Phụ cấm xe kéo moóc
+S.518 - Phụ cấm xe bánh xích
+S.519 - Phụ cấm người đi bộ
+S.520 - Phụ cấm xe đạp thồ
+S.521 - Phụ cấm xe ba bánh loại có động cơ
+S.522 - Phụ cấm xe ba bánh loại không có động cơ
+S.523 - Phụ cấm xe kéo rơ-moóc và sơ-mi rơ-moóc
+S.524 - Phụ cấm xe ô tô kéo rơ-moóc
+S.525 - Phụ cấm tải trọng trục
+S.526 - Phụ cấm chiều cao
+S.527 - Phụ cấm chiều rộng
+S.528 - Phụ cấm chiều dài
+S.529 - Phụ cấm tải trọng toàn bộ
+S.530 - Phụ cấm chất nổ
+S.531 - Phụ cấm chất dễ cháy
+S.532 - Phụ cấm chất độc
+S.533 - Phụ cấm chất phóng xạ
+S.534 - Phụ cấm hàng dài
+S.535 - Phụ cấm hàng nguy hiểm
+S.536 - Phụ cấm hàng dễ vỡ
+S.537 - Phụ cấm hàng dễ cháy
+S.538 - Phụ cấm hàng dễ nổ
+S.539 - Phụ cấm hàng độc hại
+S.540 - Phụ cấm hàng phóng xạ
+S.541 - Phụ cấm hàng dễ bốc cháy
+S.542 - Phụ cấm hàng dễ bốc hơi
+S.543 - Phụ cấm hàng dễ bốc khói
+S.544 - Phụ cấm hàng dễ bốc mùi
+S.545 - Phụ cấm hàng dễ bốc bụi
+S.546 - Phụ cấm hàng dễ bốc tiếng ồn
+S.547 - Phụ cấm hàng dễ bốc rung
+S.548 - Phụ cấm hàng dễ bốc nhiệt
+S.549 - Phụ cấm hàng dễ bốc lạnh
+S.550 - Phụ cấm hàng dễ bốc ẩm
+
+TỔNG CỘNG: 250 biển báo cần thêm hình ảnh
+==========================================
+
+LƯU Ý:
+- Tất cả các biển báo hiện tại đã được tạo với image_path = null
+- Thông tin ghi chú đã được lưu trong trường source_attrib của database
+- Để thêm hình ảnh, cập nhật trường image_path với đường dẫn tương đối từ thư mục public
+- Ví dụ: 'images/traffic-signs/P.101.png'
+
